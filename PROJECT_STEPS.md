@@ -138,7 +138,7 @@ Each service owns **only its own tables** (loose coupling). Cross-service refere
 ## 4. Step 2 — Milestone 1: User Microservice
 
 - [ ] Generate a Spring Boot project (`user-service`) with: Spring Web, Spring Data JPA, MySQL Driver, Validation, Eureka Discovery Client, OpenFeign, Lombok (optional), springdoc-openapi.
-- [ ] Configure `application.yml` (datasource → `user_db`, `spring.application.name: user-service`, port 8081).
+- [ ] Configure `application.properties` (datasource → `user_db`, `spring.application.name=user-service`, port 8081).
 - [ ] Implement entity, DTOs, repository, service and controller.
 - [ ] Endpoints:
 
@@ -208,13 +208,10 @@ Each service owns **only its own tables** (loose coupling). Cross-service refere
 ## 7. Step 5 — Milestone 4: Eureka Server & service registration
 
 - [ ] Create `eureka-server` (dependency: Eureka Server), annotate main class with `@EnableEurekaServer`.
-- [ ] `application.yml`: port 8761, `register-with-eureka: false`, `fetch-registry: false`.
+- [ ] `application.properties`: port 8761, `eureka.client.register-with-eureka=false`, `eureka.client.fetch-registry=false`.
 - [ ] In each microservice add the Eureka client dependency and:
-  ```yaml
-  eureka:
-    client:
-      service-url:
-        defaultZone: http://localhost:8761/eureka/
+  ```properties
+  eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
   ```
 - [ ] Start Eureka first, then the services; verify **USER-SERVICE, PROJECT-SERVICE, ISSUE-SERVICE** (and later API-GATEWAY) appear on the dashboard at `http://localhost:8761`.
 - [ ] Take a screenshot of the dashboard for the README.
@@ -264,21 +261,18 @@ Implement every endpoint marked *inter-service* above.
 
 - [ ] Create `api-gateway` with Spring Cloud Gateway + Eureka Client (+ LoadBalancer).
 - [ ] Configure routes using `lb://` URIs (client-side load balancing via Eureka):
-  ```yaml
-  spring:
-    cloud:
-      gateway:
-        routes:
-          - id: user-service
-            uri: lb://USER-SERVICE
-            predicates: [ Path=/api/users/** ]
-          - id: project-service
-            uri: lb://PROJECT-SERVICE
-            predicates: [ Path=/api/projects/** ]
-          - id: issue-service
-            uri: lb://ISSUE-SERVICE
-            predicates: [ Path=/api/issues/** ]
+  ```properties
+  spring.cloud.gateway.routes[0].id=user-service
+  spring.cloud.gateway.routes[0].uri=lb://USER-SERVICE
+  spring.cloud.gateway.routes[0].predicates[0]=Path=/api/users/**
+  spring.cloud.gateway.routes[1].id=project-service
+  spring.cloud.gateway.routes[1].uri=lb://PROJECT-SERVICE
+  spring.cloud.gateway.routes[1].predicates[0]=Path=/api/projects/**
+  spring.cloud.gateway.routes[2].id=issue-service
+  spring.cloud.gateway.routes[2].uri=lb://ISSUE-SERVICE
+  spring.cloud.gateway.routes[2].predicates[0]=Path=/api/issues/**
   ```
+  (Newer Spring Cloud releases move this under `spring.cloud.gateway.server.webflux.routes`; the exact prefix is fixed when Milestone 7 is built.)
 - [ ] Verify all endpoints work through `http://localhost:8080/...` only.
 - [ ] (Optional) Demonstrate load balancing by running two instances of one service on different ports.
 - [ ] (Optional) Add a fallback / circuit breaker for failure handling, and aggregate Swagger docs at the gateway.
@@ -290,7 +284,7 @@ Implement every endpoint marked *inter-service* above.
 
 - [ ] **Authentication / security:** secure the application and data — e.g. login returns a **JWT**; the gateway (or each service) validates the token; role-based access (Project Owner vs Assignee). Passwords stored with BCrypt.
 - [ ] **Low latency / high throughput:** pagination on list endpoints (optional), DB indexes on foreign-key columns (`project`, `assignee`, `productOwner`), avoid N+1 calls between services.
-- [ ] **Scalable & maintainable:** stateless services, config externalised in `application.yml`, layered code, DTOs, clear naming.
+- [ ] **Scalable & maintainable:** stateless services, config externalised in `application.properties`, layered code, DTOs, clear naming.
 - [ ] **Extensibility:** keep the design open to plug in later features (real-time updates, notifications on status change, in-issue commenting) — e.g. a service-layer hook/event when an issue's status changes.
 
 ---
