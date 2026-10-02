@@ -9,28 +9,41 @@ Milestone 1 of the Issue Tracking System: sign up, login and user management.
 | Swagger UI | http://localhost:8081/swagger-ui.html |
 | Postman | [`postman/user-service.postman_collection.json`](../postman/user-service.postman_collection.json) |
 
-## Run it
+## Run it in Spring Tool Suite (STS)
 
-Requirements: JDK 17+, Maven 3.9+, MySQL 8.
+Requirements: STS 4 (bundles a JDK and Maven), MySQL 8.
+
+**1. Create the database (once).** Run [`db/01_user_db.sql`](../db/01_user_db.sql) in MySQL Workbench, or in a terminal:
+`mysql -u root -p < db/01_user_db.sql`
+
+**2. Import the project**
+1. *File → Import… → Maven → Existing Maven Projects → Next*.
+2. *Root Directory*: choose the cloned `PublicWeak3` folder, then *Browse*. STS lists every `pom.xml` it finds. Tick `user-service` (and later the other services) and click *Finish*.
+3. Wait for the Maven download to finish (progress bar at the bottom right). If the project shows red errors afterwards, right-click it → *Maven → Update Project…* → *OK*.
+
+**3. Set your MySQL password**
+1. In `src/main/resources`, copy `application-local.yml.example` to a new file named `application-local.yml` in the same folder.
+2. Put your MySQL username and password in it.
+
+This file is git-ignored, so your password is never pushed to GitHub. If your MySQL login is `root` / `root`, you can skip this step.
+
+**4. Start the service.** In the *Boot Dashboard* view (bottom left), select `user-service` and click the ▶ start button. Or right-click the project → *Run As → Spring Boot App*.
+
+The console should end with `Tomcat started on port 8081`. Then open http://localhost:8081/swagger-ui.html.
+
+With **DevTools** included, the service restarts by itself every time you save a Java file.
+
+**5. Run the tests** (they don't need MySQL). Right-click the project → *Run As → JUnit Test*. Or *Run As → Maven test*.
+
+### Command line (optional)
 
 ```bash
-# 1. create the database (once)
-mysql -u root -p < db/01_user_db.sql
-
-# 2. start the service (set your own MySQL password)
 cd user-service
-DB_PASSWORD=yourMySqlPassword mvn spring-boot:run
-```
-
-Defaults: `DB_HOST=localhost`, `DB_PORT=3306`, `DB_USERNAME=root`, `DB_PASSWORD=root`.
-
-In IntelliJ: open the `user-service` folder, then run `UserServiceApplication`. To use a different password, set `DB_PASSWORD` under *Run → Edit Configurations → Environment variables*.
-
-Run the tests (they don't need MySQL):
-
-```bash
+mvn spring-boot:run      # uses application-local.yml if present
 mvn test
 ```
+
+The settings resolve in this order: environment variables (`DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`), then `application-local.yml`, then the defaults (`localhost:3306`, `root` / `root`).
 
 ## Endpoints
 

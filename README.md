@@ -16,10 +16,11 @@ See [PROJECT_STEPS.md](PROJECT_STEPS.md) for the full plan.
 
 ## Getting started
 
-1. Install JDK 17+, Maven 3.9+ and MySQL 8.
+1. Install **Spring Tool Suite 4** (it includes a JDK and Maven) and **MySQL 8**.
 2. Create the databases: see [db/README.md](db/README.md).
-3. Start a service: see its README (for example [user-service/README.md](user-service/README.md)).
-4. Import the Postman collections from [postman/](postman/).
+3. In STS: *File → Import… → Maven → Existing Maven Projects*, select this repository folder and tick the services.
+4. Start a service: see its README for the STS steps (for example [user-service/README.md](user-service/README.md)).
+5. Import the Postman collections from [postman/](postman/).
 
 ## Repository layout
 
