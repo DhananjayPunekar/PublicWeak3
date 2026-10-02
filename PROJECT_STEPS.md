@@ -25,7 +25,7 @@ A step-by-step plan for building the **Issue Tracking System** described in the 
 
 ## 2. Step 0 — Prerequisites & environment setup
 
-- [ ] Install **JDK 17+**, **Maven**, **MySQL 8**, **Postman**, **Git**, and an IDE (IntelliJ / Eclipse / VS Code).
+- [ ] Install **JDK 17+**, **Maven**, **MySQL 8**, **Postman**, **Git**, and **Spring Tool Suite (STS)** as the IDE.
 - [ ] Create a GitHub repository (e.g. `issue-tracking-system`) and clone it locally.
 - [ ] Decide versions once and use them in every service: **Spring Boot 3.x** with the **matching Spring Cloud release train** (check the compatibility table on spring.io).
 - [ ] Create the three MySQL databases:

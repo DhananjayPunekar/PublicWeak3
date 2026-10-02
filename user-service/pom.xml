@@ -61,6 +61,14 @@
             <version>${springdoc.version}</version>
         </dependency>
 
+        <!-- Automatic restart in STS when a file is saved (development only, not packaged) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+
         <!-- Testing: JUnit 5, Mockito, MockMvc -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
