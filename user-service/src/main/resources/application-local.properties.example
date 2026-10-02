@@ -1,0 +1,10 @@
+# Local settings for YOUR machine.
+#
+# 1. Copy this file in the same folder and name the copy: application-local.properties
+#    (in STS: right-click the file > Copy, then right-click the folder > Paste, and rename)
+# 2. Put your MySQL username and password below.
+#
+# application-local.properties is listed in .gitignore, so it is never committed.
+
+spring.datasource.username=root
+spring.datasource.password=your-mysql-password

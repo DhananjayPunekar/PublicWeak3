@@ -22,7 +22,7 @@ Requirements: STS 4 (bundles a JDK and Maven), MySQL 8.
 3. Wait for the Maven download to finish (progress bar at the bottom right). If the project shows red errors afterwards, right-click it → *Maven → Update Project…* → *OK*.
 
 **3. Set your MySQL password**
-1. In `src/main/resources`, copy `application-local.yml.example` to a new file named `application-local.yml` in the same folder.
+1. In `src/main/resources`, copy `application-local.properties.example` to a new file named `application-local.properties` in the same folder.
 2. Put your MySQL username and password in it.
 
 This file is git-ignored, so your password is never pushed to GitHub. If your MySQL login is `root` / `root`, you can skip this step.
@@ -39,11 +39,11 @@ With **DevTools** included, the service restarts by itself every time you save a
 
 ```bash
 cd user-service
-mvn spring-boot:run      # uses application-local.yml if present
+mvn spring-boot:run      # uses application-local.properties if present
 mvn test
 ```
 
-The settings resolve in this order: environment variables (`DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`), then `application-local.yml`, then the defaults (`localhost:3306`, `root` / `root`).
+The settings resolve in this order: environment variables (`DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`), then `application-local.properties`, then the defaults (`localhost:3306`, `root` / `root`).
 
 ## Endpoints
 
