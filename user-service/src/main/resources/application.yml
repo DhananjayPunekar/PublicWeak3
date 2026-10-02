@@ -1,0 +1,28 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: user-service
+
+  # Database: run db/01_user_db.sql first.
+  # Credentials can be overridden with environment variables, e.g.
+  #   DB_USERNAME=root DB_PASSWORD=secret mvn spring-boot:run
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/user_db
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+
+  jpa:
+    hibernate:
+      # Tables are created by the SQL scripts in /db, so Hibernate must not change them.
+      ddl-auto: none
+    open-in-view: false
+    show-sql: false
+
+# Swagger UI: http://localhost:8081/swagger-ui.html
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
