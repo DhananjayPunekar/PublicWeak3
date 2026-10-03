@@ -1,4 +1,4 @@
-package com.its.userservice.exception;
+package com.its.projectservice.exception;
 
 import com.fasterxml.jackson.core.JsonLocation;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -43,12 +43,6 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.CONFLICT, ex.getMessage(), request);
     }
 
-    @ExceptionHandler(InvalidCredentialsException.class)
-    public ResponseEntity<ApiError> handleInvalidCredentials(InvalidCredentialsException ex,
-                                                             HttpServletRequest request) {
-        return build(HttpStatus.UNAUTHORIZED, ex.getMessage(), request);
-    }
-
     @ExceptionHandler(InvalidRequestException.class)
     public ResponseEntity<ApiError> handleInvalidRequest(InvalidRequestException ex, HttpServletRequest request) {
         return build(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
@@ -68,13 +62,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(status).body(body);
     }
 
-    /** Missing or malformed JSON, an unknown role, or a value of the wrong type. */
+    /** Missing or malformed JSON, or a value of the wrong type (e.g. an invalid date). */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiError> handleUnreadable(HttpMessageNotReadableException ex, HttpServletRequest request) {
         return build(HttpStatus.BAD_REQUEST, describeUnreadable(ex), request);
     }
 
-    /** A path variable of the wrong type, e.g. /api/users/abc. */
+    /** A path variable of the wrong type, e.g. /api/projects/abc. */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiError> handleTypeMismatch(MethodArgumentTypeMismatchException ex,
                                                        HttpServletRequest request) {
@@ -82,7 +76,7 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.BAD_REQUEST, message, request);
     }
 
-    /** Database constraint violation, e.g. two requests registering the same email at once. */
+    /** Database constraint violation, e.g. two requests creating the same project name at once. */
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiError> handleDataIntegrity(DataIntegrityViolationException ex,
                                                         HttpServletRequest request) {
@@ -113,15 +107,14 @@ public class GlobalExceptionHandler {
     /**
      * Explains why the JSON body could not be read, as precisely as possible:
      * <ul>
-     *   <li>unknown role - "Invalid role 'admin'. Allowed values: productOwner, assignee"</li>
      *   <li>broken JSON (missing quote, comma, ...) - "Malformed JSON at line 2, column 22"</li>
-     *   <li>wrong value type - "Invalid value 'abc' for field 'userId'"</li>
+     *   <li>wrong value type - "Invalid value '2026-13-01' for field 'startDate'"</li>
      * </ul>
      */
     static String describeUnreadable(HttpMessageNotReadableException ex) {
         Throwable root = ex.getMostSpecificCause();
         if (root instanceof IllegalArgumentException && !(root instanceof NumberFormatException)) {
-            return root.getMessage(); // thrown by our own code, e.g. Role.fromValue
+            return root.getMessage(); // thrown by our own code, e.g. an enum's @JsonCreator
         }
         Throwable cause = ex.getCause();
         if (cause instanceof InvalidFormatException invalidFormat) {
@@ -138,7 +131,7 @@ public class GlobalExceptionHandler {
         return "Request body is missing or malformed";
     }
 
-    /** "email", or "items.[0].name" for nested fields. */
+    /** "startDate", or "items.[0].name" for nested fields. */
     private static String fieldPath(JsonMappingException ex) {
         return ex.getPath().stream()
                 .map(ref -> ref.getFieldName() != null ? ref.getFieldName() : "[" + ref.getIndex() + "]")
