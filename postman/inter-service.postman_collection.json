@@ -1,0 +1,331 @@
+{
+  "info": {
+    "name": "ITS - Inter-service communication",
+    "description": "Milestone 5: endpoints where one service calls another. Start eureka-server, then user-, project- and issue-service, and wait until all three show UP on http://localhost:8761.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "userServiceUrl",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "projectServiceUrl",
+      "value": "http://localhost:8082"
+    },
+    {
+      "key": "issueServiceUrl",
+      "value": "http://localhost:8083"
+    }
+  ],
+  "item": [
+    {
+      "name": "User Service \u2192 Issue Service (Feign)",
+      "item": [
+        {
+          "name": "Issues assigned to user 2",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{userServiceUrl}}/api/users/2/issues",
+              "host": [
+                "{{userServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "2",
+                "issues"
+              ]
+            },
+            "description": "Sample data: issues 201 and 203."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Returns a list\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Issues assigned to 'Bob Johnson'",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{userServiceUrl}}/api/users/username/Bob Johnson/issues",
+              "host": [
+                "{{userServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "username",
+                "Bob Johnson",
+                "issues"
+              ]
+            },
+            "description": "Same user as above, looked up by name."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Returns a list\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Unknown user (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{userServiceUrl}}/api/users/9999/issues",
+              "host": [
+                "{{userServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "9999",
+                "issues"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "User Service \u2192 Project Service (RestTemplate)",
+      "item": [
+        {
+          "name": "Projects owned by user 1",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{userServiceUrl}}/api/users/1/projects",
+              "host": [
+                "{{userServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "1",
+                "projects"
+              ]
+            },
+            "description": "Sample data: Project Alpha (101)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Returns a list\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Project Service \u2192 Issue Service (Feign)",
+      "item": [
+        {
+          "name": "Issues of project 101",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{projectServiceUrl}}/api/projects/101/issues",
+              "host": [
+                "{{projectServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "101",
+                "issues"
+              ]
+            },
+            "description": "Sample data: issues 201, 202, 207."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Returns a list\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Issues of 'Project Alpha'",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{projectServiceUrl}}/api/projects/projectName/Project Alpha/issues",
+              "host": [
+                "{{projectServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "projectName",
+                "Project Alpha",
+                "issues"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Returns a list\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Unknown project (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{projectServiceUrl}}/api/projects/9999/issues",
+              "host": [
+                "{{projectServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "9999",
+                "issues"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Issue Service \u2192 Project Service (Feign)",
+      "item": [
+        {
+          "name": "Issues owned by user 1",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{issueServiceUrl}}/api/issues/owner/1",
+              "host": [
+                "{{issueServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "issues",
+                "owner",
+                "1"
+              ]
+            },
+            "description": "User 1 owns project 101, so: issues 201, 202, 207."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Returns a list\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Owner with no projects (empty list)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{issueServiceUrl}}/api/issues/owner/9",
+              "host": [
+                "{{issueServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "issues",
+                "owner",
+                "9"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Returns a list\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
