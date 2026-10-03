@@ -10,8 +10,8 @@ See [PROJECT_STEPS.md](PROJECT_STEPS.md) for the full plan.
 |---|---|---|---|
 | [user-service](user-service/) | 8081 | `user_db` | Milestone 1 ✅ |
 | [project-service](project-service/) | 8082 | `project_db` | Milestone 2 ✅ |
-| issue-service | 8083 | `issue_db` | Milestone 3 – next |
-| eureka-server | 8761 | – | Milestone 4 |
+| [issue-service](issue-service/) | 8083 | `issue_db` | Milestone 3 ✅ |
+| eureka-server | 8761 | – | Milestone 4 – next |
 | api-gateway | 8080 | – | Milestone 7 |
 
 ## Getting started
@@ -29,4 +29,5 @@ db/               MySQL scripts: one database per service, with sample data
 postman/          Postman collections for testing each service
 user-service/     Milestone 1 - sign up, login, user CRUD
 project-service/  Milestone 2 - project CRUD, projects by owner
+issue-service/    Milestone 3 - issue CRUD, status updates, comments
 ```
