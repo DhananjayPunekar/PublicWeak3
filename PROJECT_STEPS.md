@@ -12,7 +12,7 @@ A step-by-step plan for building the **Issue Tracking System** described in the 
 | **API Gateway** (Spring Cloud Gateway) | Single entry point; routes `/user`, `/project`, `/issue` traffic; client-side load balancing | – |
 | **User Service** | Sign up, login, user CRUD, roles (Project Owner / Assignee) | `user_db` |
 | **Project Service** | Project CRUD, projects by owner | `project_db` |
-| **Issue Service** | Issue CRUD, issues by project / owner / assignee, comments | `issue_db` |
+| **Issue Service** | Issue CRUD, issues by project / owner / assignee | `issue_db` |
 
 **Inter-service communication (from the architecture diagram)**
 
@@ -120,16 +120,6 @@ Each service owns **only its own tables** (loose coupling). Cross-service refere
 | lastUpdated | DATE | NOT NULL |
 | comments | TEXT | optional |
 
-### 3.4 Issue Service — `comments` (extension)
-
-| Column | Type | Constraints |
-|---|---|---|
-| commentId | INT | PK, AUTO_INCREMENT |
-| issueId | INT | FK → issues(id) |
-| text | TEXT | NOT NULL |
-| createdDate | DATE | NOT NULL |
-| lastUpdated | DATE | NOT NULL |
-
 - [ ] Create JPA entities for each table (use `@Enumerated(EnumType.STRING)` for enums).
 - [ ] Write `db/<service>-schema.sql` and `db/<service>-data.sql` with the **sample data** from the reference sheet (9 users, projects 101–105, issues 201–209). The sample data is only a reference; the code must work for any data.
 
@@ -200,7 +190,6 @@ Each service owns **only its own tables** (loose coupling). Cross-service refere
 - [ ] Set `createdOn` / `lastUpdated` server-side; default `status` to `TO DO` if not provided.
 - [ ] Validation: required fields, valid enum values, project exists, assignee exists.
 - [ ] **Assignee view:** an assignee can view their issues and update **status only**; a project owner can update all fields. (Enforce using the caller's role.)
-- [ ] Optional extension: comments endpoints (`POST /api/issues/{id}/comments`, `GET /api/issues/{id}/comments`, …) using the `comments` table.
 - [ ] Test in Postman; commit & push.
 
 ---
@@ -338,7 +327,6 @@ The final evaluation is a discussion of **assumptions, functionalities and valid
 - The spreadsheet's `Users` table omits `email` and `profile`, and the `Issues` table omits `type`, `sprint`, `tags`, `storyPoint`, `createdBy` — but the ER diagram and sample data include them, so include them.
 - Sample data has issue 207 assigned to user **10**, who doesn't exist (users are 1–9) — a good example for your "assignee must exist" validation.
 - Sample projects 102, 104 and 105 have owners (users 3, 2, 5) whose role is `assignee`, and issues 205, 206 and 209 are assigned to users 6 and 8, whose role is `productOwner` — decide whether to enforce role checks on owner/assignee (and say so), since strict checks would reject some of the sample data.
-- The spreadsheet has a "Comments Endpoints" section that is cut off in the photos; check the original sheet for the exact endpoints.
 
 **Demo flow**
 

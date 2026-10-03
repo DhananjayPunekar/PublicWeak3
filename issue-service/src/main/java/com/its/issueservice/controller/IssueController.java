@@ -123,7 +123,7 @@ public class IssueController {
         return ResponseEntity.ok(issueService.updateStatus(id, request.status()));
     }
 
-    @Operation(summary = "Delete an issue (and its comments)")
+    @Operation(summary = "Delete an issue")
     @ApiResponse(responseCode = "200", description = "Issue deleted")
     @ApiResponse(responseCode = "404", description = "Issue not found",
             content = @Content(schema = @Schema(implementation = ApiError.class)))

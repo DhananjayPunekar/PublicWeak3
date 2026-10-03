@@ -15,7 +15,7 @@ public class OpenApiConfig {
     public OpenAPI issueServiceOpenApi() {
         return new OpenAPI().info(new Info()
                 .title("Issue Service API")
-                .description("Issue Tracking System - issues within projects, status updates and comments")
+                .description("Issue Tracking System - issues within projects and status updates")
                 .version("v1"));
     }
 }

@@ -140,7 +140,7 @@ public class IssueServiceImpl implements IssueService {
     @Transactional
     public void deleteIssue(Integer issueId) {
         Issue issue = findIssue(issueId);
-        issueRepository.delete(issue); // its comments are removed by ON DELETE CASCADE
+        issueRepository.delete(issue);
     }
 
     // ----------------------------------------------------------------- helpers

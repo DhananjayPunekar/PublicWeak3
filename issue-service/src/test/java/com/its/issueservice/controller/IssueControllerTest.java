@@ -1,14 +1,11 @@
 package com.its.issueservice.controller;
 
-import com.its.issueservice.dto.CommentRequest;
-import com.its.issueservice.dto.CommentResponse;
 import com.its.issueservice.dto.IssueRequest;
 import com.its.issueservice.dto.IssueResponse;
 import com.its.issueservice.entity.IssueStatus;
 import com.its.issueservice.entity.IssueType;
 import com.its.issueservice.entity.Priority;
 import com.its.issueservice.exception.ResourceNotFoundException;
-import com.its.issueservice.service.CommentService;
 import com.its.issueservice.service.IssueService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +18,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -33,10 +29,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Web-layer tests for {@link IssueController} and {@link CommentController}:
- * request validation, HTTP status codes and JSON shape. Services are mocked.
+ * Web-layer tests for {@link IssueController}: request validation,
+ * HTTP status codes and JSON shape. The service is mocked.
  */
-@WebMvcTest(controllers = {IssueController.class, CommentController.class})
+@WebMvcTest(IssueController.class)
 class IssueControllerTest {
 
     @Autowired
@@ -44,9 +40,6 @@ class IssueControllerTest {
 
     @MockitoBean
     private IssueService issueService;
-
-    @MockitoBean
-    private CommentService commentService;
 
     private static IssueResponse issue(IssueStatus status) {
         return new IssueResponse(201, "Login Feature", IssueType.BUG, 101, "Implement login",
@@ -163,30 +156,4 @@ class IssueControllerTest {
                 .andExpect(jsonPath("$.message").value("Issue with ID 209 deleted successfully"));
     }
 
-    @Test
-    void addComment_returns201() throws Exception {
-        when(commentService.addComment(eq(201), any(CommentRequest.class)))
-                .thenReturn(new CommentResponse(1, 201, "Reproduced", LocalDate.of(2026, 10, 3),
-                        LocalDate.of(2026, 10, 3)));
-
-        mockMvc.perform(post("/api/issues/201/comments")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {"text":"Reproduced"}
-                                """))
-                .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "http://localhost/api/issues/201/comments/1"))
-                .andExpect(jsonPath("$.text").value("Reproduced"));
-    }
-
-    @Test
-    void addComment_withEmptyText_returns400() throws Exception {
-        mockMvc.perform(post("/api/issues/201/comments")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {"text":"  "}
-                                """))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.fieldErrors.text").exists());
-    }
 }

@@ -15,7 +15,7 @@
     <artifactId>issue-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>issue-service</name>
-    <description>Issue Tracking System - Issue microservice (issues and comments)</description>
+    <description>Issue Tracking System - Issue microservice (issue management)</description>
 
     <properties>
         <java.version>17</java.version>

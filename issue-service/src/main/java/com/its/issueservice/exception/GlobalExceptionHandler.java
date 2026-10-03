@@ -71,7 +71,7 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.BAD_REQUEST, message, request);
     }
 
-    /** Database constraint violation, e.g. a comment for an issue that was just deleted. */
+    /** Database constraint violation, e.g. a value too long for its column. */
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiError> handleDataIntegrity(DataIntegrityViolationException ex,
                                                         HttpServletRequest request) {

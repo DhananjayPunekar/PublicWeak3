@@ -1,6 +1,6 @@
 # Issue Service
 
-Milestone 3 of the Issue Tracking System: issues within projects (Project Owner and Assignee views) and comments on issues.
+Milestone 3 of the Issue Tracking System: issues within projects (Project Owner and Assignee views).
 
 | | |
 |---|---|
@@ -23,8 +23,6 @@ The steps are the same as for the [User Service](../user-service/README.md#run-i
 
 ## Endpoints
 
-### Issues
-
 | Method | Endpoint | View | Description | Success |
 |---|---|---|---|---|
 | POST | `/api/issues` | Owner | Create an issue | 201 |
@@ -34,18 +32,9 @@ The steps are the same as for the [User Service](../user-service/README.md#run-i
 | GET | `/api/issues/assignee/{assigneeId}` | Assignee | Issues assigned to a user | 200 |
 | PUT | `/api/issues/{id}` | Owner | Update any fields (partial) | 200 |
 | PATCH | `/api/issues/{id}/status` | Assignee | Change only the status | 200 |
-| DELETE | `/api/issues/{id}` | Owner | Delete an issue and its comments | 200 |
+| DELETE | `/api/issues/{id}` | Owner | Delete an issue | 200 |
 
 `GET /api/issues/owner/{ownerId}` (issues across all projects a user owns) needs the Project Service, so it comes in Milestone 5.
-
-### Comments
-
-| Method | Endpoint | Description | Success |
-|---|---|---|---|
-| POST | `/api/issues/{issueId}/comments` | Add a comment (`{"text": "..."}`) | 201 |
-| GET | `/api/issues/{issueId}/comments` | Comments of an issue, oldest first | 200 |
-| PUT | `/api/issues/{issueId}/comments/{commentId}` | Edit a comment | 200 |
-| DELETE | `/api/issues/{issueId}/comments/{commentId}` | Delete a comment | 200 |
 
 ### Field values
 
@@ -87,23 +76,23 @@ The error body has the same shape as in the other services.
 | Status | When |
 |---|---|
 | 400 | Missing/invalid fields, unknown type/priority/status (the message lists the allowed values), future `createdOn`, broken JSON, non-numeric ID |
-| 404 | Issue or comment doesn't exist |
+| 404 | Issue doesn't exist |
 
 ## Design decisions / assumptions
 
 - **Project Owner vs Assignee:** owners use `PUT` to change any field; assignees use `PATCH …/status`, which can only change the status. Each role will be restricted to its own endpoints once login tokens (JWT) are added.
 - **`project`, `assignee` and `createdBy` are plain IDs**, because projects and users live in other services. Milestone 5 adds calls to the Project and User services to check that they exist.
 - **Dates:** `lastUpdated` is always set by the server. `createdOn` may be given, for example when importing old issues, but can't be in the future.
-- **Comments:** stored in the `comments` table. Deleting an issue deletes its comments (`ON DELETE CASCADE`). The free-text `comments` column on the issue is also kept, because it's in the specification.
+- **`comments`** is a free-text field on the issue itself, as in the specification.
 
 ## Code layout
 
 ```
 com.its.issueservice
-├── controller   IssueController, CommentController - REST endpoints, ResponseEntity everywhere
-├── service      IssueService, CommentService + impls - defaults, partial update, status update
-├── repository   IssueRepository, CommentRepository - Spring Data JPA
-├── entity       Issue, Comment, IssueStatus (+ converter for 'TO DO'), Priority, IssueType
+├── controller   IssueController - REST endpoints, ResponseEntity everywhere
+├── service      IssueService + impl - defaults, partial update, status update
+├── repository   IssueRepository - Spring Data JPA
+├── entity       Issue, IssueStatus (+ converter for 'TO DO'), Priority, IssueType
 ├── dto          request/response records with Bean Validation
 ├── exception    custom exceptions + GlobalExceptionHandler (@RestControllerAdvice)
 └── config       Swagger metadata, Clock (for testable dates)
