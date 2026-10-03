@@ -63,6 +63,12 @@
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
 
+        <!-- Feign clients for calling other services (Milestone 5) -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
         <!-- Automatic restart in STS when a file is saved (development only, not packaged) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

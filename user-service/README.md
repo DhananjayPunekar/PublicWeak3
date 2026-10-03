@@ -56,7 +56,20 @@ The settings resolve in this order: environment variables (`DB_HOST`, `DB_PORT`,
 | PUT | `/api/users/{userId}` | Update any of `name`, `email`, `password`, `role`, `profileImage` | 200 |
 | DELETE | `/api/users/{userId}` | Delete a user | 200 |
 
-The two issue lookups (`/api/users/{userId}/issues`, `/api/users/username/{username}/issues`) need the Issue Service and come in Milestone 5.
+### Inter-service endpoints (Milestone 5)
+
+These get their data from other services, found through Eureka, so start `eureka-server`, `issue-service` and `project-service` too.
+
+| Method | Endpoint | Calls | How | Success |
+|---|---|---|---|---|
+| GET | `/api/users/{userId}/issues` | issue-service `GET /api/issues/assignee/{userId}` | Feign (`IssueClient`) | 200 |
+| GET | `/api/users/username/{username}/issues` | the same, for each user with that name | Feign (`IssueClient`) | 200 |
+| GET | `/api/users/{userId}/projects` | project-service `GET /api/projects/owner/{userId}` | RestTemplate (`ProjectClient`) | 200 |
+
+- **404** if the user (or user name) doesn't exist in this service.
+- **503** if the other service is down or not registered in Eureka.
+- Names aren't unique, so the by-name lookup combines the issues of every user with that name. It's case-insensitive.
+- `/api/users/{userId}/projects` isn't in the endpoint list of the brief. It's added because the architecture diagram shows a **RestTemplate** call from the User Service to the Project Service.
 
 ### Sign up example
 

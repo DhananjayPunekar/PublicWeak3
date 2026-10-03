@@ -23,6 +23,17 @@ See [PROJECT_STEPS.md](PROJECT_STEPS.md) for the full plan.
    Check http://localhost:8761: all three services should be listed as UP.
 5. Import the Postman collections from [postman/](postman/).
 
+## Inter-service communication (Milestone 5) ✅
+
+| From | To | How | Endpoint |
+|---|---|---|---|
+| user-service | issue-service | Feign | `GET /api/users/{userId}/issues`, `GET /api/users/username/{username}/issues` |
+| user-service | project-service | RestTemplate | `GET /api/users/{userId}/projects` |
+| project-service | issue-service | Feign | `GET /api/projects/{projectId}/issues`, `GET /api/projects/projectName/{projectName}/issues` |
+| issue-service | project-service | Feign | `GET /api/issues/owner/{ownerId}` |
+
+Services find each other by name through Eureka (for example `http://project-service/...`), never by host and port. If a called service is down, the caller answers **503**. Postman: [`postman/inter-service.postman_collection.json`](postman/inter-service.postman_collection.json).
+
 ## Repository layout
 
 ```

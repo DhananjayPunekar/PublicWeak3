@@ -34,7 +34,15 @@ The steps are the same as for the [User Service](../user-service/README.md#run-i
 | PATCH | `/api/issues/{id}/status` | Assignee | Change only the status | 200 |
 | DELETE | `/api/issues/{id}` | Owner | Delete an issue | 200 |
 
-`GET /api/issues/owner/{ownerId}` (issues across all projects a user owns) needs the Project Service, so it comes in Milestone 5.
+### Inter-service endpoint (Milestone 5)
+
+| Method | Endpoint | Calls | How | Success |
+|---|---|---|---|---|
+| GET | `/api/issues/owner/{ownerId}` | project-service `GET /api/projects/owner/{ownerId}`, then loads those projects' issues | Feign (`ProjectClient`) | 200 |
+
+- "Issues owned by a user" means the issues of every project that user owns. If the user owns no projects, the result is an empty list.
+- **503** if the Project Service is down or not registered in Eureka.
+- `GET /api/issues/project/{projectId}` and `GET /api/issues/assignee/{assigneeId}` above are the endpoints the Project and User services call.
 
 ### Field values
 
@@ -81,7 +89,7 @@ The error body has the same shape as in the other services.
 ## Design decisions / assumptions
 
 - **Project Owner vs Assignee:** owners use `PUT` to change any field; assignees use `PATCH …/status`, which can only change the status. Each role will be restricted to its own endpoints once login tokens (JWT) are added.
-- **`project`, `assignee` and `createdBy` are plain IDs**, because projects and users live in other services. Milestone 5 adds calls to the Project and User services to check that they exist.
+- **`project`, `assignee` and `createdBy` are plain IDs**, because projects and users live in other services. They aren't checked against those services when an issue is saved (assumption: the client sends valid IDs).
 - **Dates:** `lastUpdated` is always set by the server. `createdOn` may be given, for example when importing old issues, but can't be in the future.
 - **`comments`** is a free-text field on the issue itself, as in the specification.
 

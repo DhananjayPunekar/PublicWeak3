@@ -32,7 +32,17 @@ You can run the User Service and the Project Service at the same time, because t
 | PUT | `/api/projects/{projectId}` | Update any of `projectName`, `productOwner`, `startDate`, `endDate` | 200 |
 | DELETE | `/api/projects/{projectId}` | Delete a project | 200 |
 
-The two issue lookups (`/api/projects/{projectId}/issues`, `/api/projects/projectName/{projectName}/issues`) need the Issue Service and come in Milestone 5.
+### Inter-service endpoints (Milestone 5)
+
+These get the issues from the Issue Service through Eureka, so start `eureka-server` and `issue-service` too.
+
+| Method | Endpoint | Calls | How | Success |
+|---|---|---|---|---|
+| GET | `/api/projects/{projectId}/issues` | issue-service `GET /api/issues/project/{projectId}` | Feign (`IssueClient`) | 200 |
+| GET | `/api/projects/projectName/{projectName}/issues` | looks up the project's ID, then the same call | Feign (`IssueClient`) | 200 |
+
+- **404** if the project (or project name) doesn't exist. Name lookup is case-insensitive.
+- **503** if the Issue Service is down or not registered in Eureka.
 
 ### Create example
 
@@ -69,9 +79,9 @@ The error body has the same shape as in the User Service (`timestamp`, `status`,
 
 - **Project names are unique** (case-insensitive), because projects can also be looked up by name (Milestone 5).
 - **The end date may equal the start date**, but may not be earlier.
-- **`productOwner` is a plain user ID.** The user lives in the User Service's database, so there's no database foreign key. Milestone 5 adds a call to the User Service to check that the owner exists.
+- **`productOwner` is a plain user ID.** The user lives in the User Service's database, so there's no database foreign key, and the ID isn't checked against the User Service when a project is saved (assumption: the client sends a valid owner ID).
 - **Update is partial**: only the fields present in the body change. The date rule is checked against the resulting dates, so sending only a new `startDate` is checked against the existing `endDate`.
-- **Deleting a project** removes only the project for now. What happens to its issues is decided in Milestone 5, once the services talk to each other.
+- **Deleting a project** removes only the project. Its issues stay in the Issue Service (assumption: issues are kept for history).
 
 ## Code layout
 
