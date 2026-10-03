@@ -29,5 +29,5 @@ db/               MySQL scripts: one database per service, with sample data
 postman/          Postman collections for testing each service
 user-service/     Milestone 1 - sign up, login, user CRUD
 project-service/  Milestone 2 - project CRUD, projects by owner
-issue-service/    Milestone 3 - issue CRUD, status updates, comments
+issue-service/    Milestone 3 - issue CRUD, status updates
 ```

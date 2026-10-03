@@ -6,7 +6,7 @@ Each microservice owns its own MySQL database, so services stay loosely coupled:
 |---|---|---|---|
 | `01_user_db.sql` | `user_db` | `users` | user-service |
 | `02_project_db.sql` | `project_db` | `projects` | project-service |
-| `03_issue_db.sql` | `issue_db` | `issues`, `comments` | issue-service |
+| `03_issue_db.sql` | `issue_db` | `issues` | issue-service |
 
 Each script creates its database (if missing), recreates its tables and loads the sample data from the reference sheet. Running a script again **resets that database to the sample data**.
 
@@ -35,7 +35,7 @@ SELECT COUNT(*) FROM issue_db.issues;      -- 9
 ## Design notes
 
 - **Column names are snake_case** (`user_id`, `project_name`, `created_on`), which matches the ER diagram and Spring Boot's default JPA naming (a Java field `projectName` maps to column `project_name`).
-- **No foreign keys across databases.** `projects.product_owner`, `issues.project`, `issues.assignee` and `issues.created_by` point to rows owned by other services. The services check these IDs by calling each other's APIs, not through MySQL constraints. `comments.issue_id` is a real foreign key because both tables live in `issue_db`.
+- **No foreign keys across databases.** `projects.product_owner`, `issues.project`, `issues.assignee` and `issues.created_by` point to rows owned by other services. The services check these IDs by calling each other's APIs, not through MySQL constraints.
 - **Passwords are BCrypt hashes.** The sample passwords from the sheet (`abc123`, `def456`, …) still work for login; each one is noted in a comment next to its row.
 - **Sample data is kept as given**, including two inconsistencies to discuss in review:
   - issue 207 is assigned to user 10, who doesn't exist;

@@ -3,19 +3,19 @@
 -- Owner service : issue-service
 -- Database      : issue_db
 --
--- Re-runnable: drops and recreates the tables, then loads sample data.
+-- Re-runnable: drops and recreates the table, then loads sample data.
 -- Run with:  mysql -u root -p < db/03_issue_db.sql
 --
 -- Note: project, assignee and created_by hold IDs that live in other
 -- services' databases (project_db.projects, user_db.users). They are NOT
 -- database-level foreign keys; issue-service validates them by calling
 -- project-service and user-service before saving.
--- comments.issue_id IS a real foreign key, because both tables live here.
 -- =====================================================================
 
 CREATE DATABASE IF NOT EXISTS issue_db;
 USE issue_db;
 
+-- removes the old comments table if an earlier version of this script created it
 DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS issues;
 
@@ -39,17 +39,6 @@ CREATE TABLE issues (
     INDEX idx_issues_project  (project),
     INDEX idx_issues_assignee (assignee),
     INDEX idx_issues_status   (status)
-) ENGINE = InnoDB;
-
-CREATE TABLE comments (
-    comment_id    INT      NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier for comment',
-    issue_id      INT      NOT NULL                COMMENT 'ID of the issue commented on',
-    text          TEXT     NOT NULL                COMMENT 'Text of the comment',
-    created_date  DATE     NOT NULL                COMMENT 'Date the comment was created',
-    last_updated  DATE     NOT NULL                COMMENT 'Date the comment was last updated',
-    PRIMARY KEY (comment_id),
-    CONSTRAINT fk_comments_issue FOREIGN KEY (issue_id)
-        REFERENCES issues (id) ON DELETE CASCADE
 ) ENGINE = InnoDB;
 
 -- ---------------------------------------------------------------------
