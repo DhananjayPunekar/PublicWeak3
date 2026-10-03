@@ -9,8 +9,8 @@ See [PROJECT_STEPS.md](PROJECT_STEPS.md) for the full plan.
 | Service | Port | Database | Status |
 |---|---|---|---|
 | [user-service](user-service/) | 8081 | `user_db` | Milestone 1 ✅ |
-| project-service | 8082 | `project_db` | Milestone 2 – next |
-| issue-service | 8083 | `issue_db` | Milestone 3 |
+| [project-service](project-service/) | 8082 | `project_db` | Milestone 2 ✅ |
+| issue-service | 8083 | `issue_db` | Milestone 3 – next |
 | eureka-server | 8761 | – | Milestone 4 |
 | api-gateway | 8080 | – | Milestone 7 |
 
@@ -25,7 +25,8 @@ See [PROJECT_STEPS.md](PROJECT_STEPS.md) for the full plan.
 ## Repository layout
 
 ```
-db/            MySQL scripts: one database per service, with sample data
-postman/       Postman collections for testing each service
-user-service/  Milestone 1 - sign up, login, user CRUD
+db/               MySQL scripts: one database per service, with sample data
+postman/          Postman collections for testing each service
+user-service/     Milestone 1 - sign up, login, user CRUD
+project-service/  Milestone 2 - project CRUD, projects by owner
 ```
