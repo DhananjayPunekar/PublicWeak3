@@ -1,0 +1,1788 @@
+{
+  "info": {
+    "name": "ITS - via API Gateway",
+    "description": "Milestone 7: every request goes to the API Gateway on port 8080, which routes it to the right service through Eureka. Start eureka-server, the three services and api-gateway first.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "gatewayUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "newUserId",
+      "value": ""
+    },
+    {
+      "key": "newProjectId",
+      "value": ""
+    },
+    {
+      "key": "newIssueId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "User Service (via gateway)",
+      "item": [
+        {
+          "name": "Happy path",
+          "item": [
+            {
+              "name": "Sign up (create user)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/users",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users"
+                  ]
+                },
+                "description": "Expect 201 and 'Your account is created successfully'.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Test Owner\",\n  \"email\": \"test.owner@example.com\",\n  \"password\": \"secret123\",\n  \"profileImage\": \"https://example.com/test.png\",\n  \"role\": \"productOwner\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 201\", () => pm.response.to.have.status(201));",
+                      "pm.test(\"Confirmation message\", () => pm.expect(pm.response.json().message).to.eql(\"Your account is created successfully\"));",
+                      "pm.collectionVariables.set(\"newUserId\", pm.response.json().user.userId);"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Login (new user)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/users/login",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "login"
+                  ]
+                },
+                "description": "Expect 200 and the project-owner dashboard.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"test.owner@example.com\",\n  \"password\": \"secret123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                      "pm.test(\"Owner dashboard\", () => pm.expect(pm.response.json().dashboard).to.eql(\"/dashboard/project-owner\"));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Login (sample assignee Bob)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/users/login",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "login"
+                  ]
+                },
+                "description": "Sample user from db/01_user_db.sql.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"bob.johnson@example.com\",\n  \"password\": \"def456\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                      "pm.test(\"Assignee dashboard\", () => pm.expect(pm.response.json().dashboard).to.eql(\"/dashboard/assignee\"));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Get all users",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/users",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users"
+                  ]
+                },
+                "description": "Expect 200 and a list."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Get user by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/users/{{newUserId}}",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "{{newUserId}}"
+                  ]
+                },
+                "description": ""
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Update user",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/users/{{newUserId}}",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "{{newUserId}}"
+                  ]
+                },
+                "description": "Only the fields sent are changed.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Test Owner Updated\",\n  \"role\": \"assignee\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                      "pm.test(\"Role changed\", () => pm.expect(pm.response.json().role).to.eql(\"assignee\"));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Delete user",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/users/{{newUserId}}",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "{{newUserId}}"
+                  ]
+                },
+                "description": ""
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Error cases",
+          "item": [
+            {
+              "name": "Sign up - duplicate email (409)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/users",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users"
+                  ]
+                },
+                "description": "",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Alice Again\",\n  \"email\": \"alice.smith@example.com\",\n  \"password\": \"abc123\",\n  \"role\": \"productOwner\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 409\", () => pm.response.to.have.status(409));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Sign up - invalid fields (400)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/users",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users"
+                  ]
+                },
+                "description": "",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"\",\n  \"email\": \"not-an-email\",\n  \"password\": \"123\",\n  \"role\": \"assignee\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Sign up - unknown role (400)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/users",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users"
+                  ]
+                },
+                "description": "",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Someone\",\n  \"email\": \"someone@example.com\",\n  \"password\": \"abc123\",\n  \"role\": \"admin\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Login - wrong password (401)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/users/login",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "login"
+                  ]
+                },
+                "description": "",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"alice.smith@example.com\",\n  \"password\": \"wrong\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 401\", () => pm.response.to.have.status(401));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Get user - not found (404)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/users/9999",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "9999"
+                  ]
+                },
+                "description": ""
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 404\", () => pm.response.to.have.status(404));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Get user - non-numeric ID (400)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/users/abc",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "abc"
+                  ]
+                },
+                "description": ""
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Project Service (via gateway)",
+      "item": [
+        {
+          "name": "Happy path",
+          "item": [
+            {
+              "name": "Create project",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/projects",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "projects"
+                  ]
+                },
+                "description": "Expect 201 with 'Project created successfully' and the new project ID.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"projectName\": \"Project Zeta\",\n  \"productOwner\": 1,\n  \"startDate\": \"2026-01-01\",\n  \"endDate\": \"2026-12-31\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 201\", () => pm.response.to.have.status(201));",
+                      "pm.test(\"Confirmation message\", () => pm.expect(pm.response.json().message).to.eql(\"Project created successfully\"));",
+                      "pm.collectionVariables.set(\"newProjectId\", pm.response.json().projectId);"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Get all projects",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/projects",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "projects"
+                  ]
+                },
+                "description": ""
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Get project by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/projects/{{newProjectId}}",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "projects",
+                    "{{newProjectId}}"
+                  ]
+                },
+                "description": ""
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Get projects by owner (user 1)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/projects/owner/1",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "projects",
+                    "owner",
+                    "1"
+                  ]
+                },
+                "description": "Sample data: user 1 owns Project Alpha (101)."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Update project",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/projects/{{newProjectId}}",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "projects",
+                    "{{newProjectId}}"
+                  ]
+                },
+                "description": "Only the fields sent are changed.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"projectName\": \"Project Zeta v2\",\n  \"endDate\": \"2027-03-31\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                      "pm.test(\"Name changed\", () => pm.expect(pm.response.json().projectName).to.eql(\"Project Zeta v2\"));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Delete project",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/projects/{{newProjectId}}",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "projects",
+                    "{{newProjectId}}"
+                  ]
+                },
+                "description": ""
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Error cases",
+          "item": [
+            {
+              "name": "Create - duplicate name (409)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/projects",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "projects"
+                  ]
+                },
+                "description": "",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"projectName\": \"Project Alpha\",\n  \"productOwner\": 1,\n  \"startDate\": \"2026-01-01\",\n  \"endDate\": \"2026-12-31\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 409\", () => pm.response.to.have.status(409));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Create - end before start (400)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/projects",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "projects"
+                  ]
+                },
+                "description": "",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"projectName\": \"Backwards Project\",\n  \"productOwner\": 1,\n  \"startDate\": \"2026-12-31\",\n  \"endDate\": \"2026-01-01\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Create - missing fields (400)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/projects",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "projects"
+                  ]
+                },
+                "description": "",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"projectName\": \"\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Create - invalid date (400)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/projects",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "projects"
+                  ]
+                },
+                "description": "",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"projectName\": \"Bad Date\",\n  \"productOwner\": 1,\n  \"startDate\": \"2026-13-01\",\n  \"endDate\": \"2026-12-31\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Get project - not found (404)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/projects/9999",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "projects",
+                    "9999"
+                  ]
+                },
+                "description": ""
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 404\", () => pm.response.to.have.status(404));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Get project - non-numeric ID (400)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/projects/abc",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "projects",
+                    "abc"
+                  ]
+                },
+                "description": ""
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Issue Service (via gateway)",
+      "item": [
+        {
+          "name": "Issues - Project Owner view",
+          "item": [
+            {
+              "name": "Create issue",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/issues",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "issues"
+                  ]
+                },
+                "description": "Expect 201 with 'Issue created successfully'. status defaults to TO DO, createdOn/lastUpdated to today.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"summary\": \"Login page crashes\",\n  \"type\": \"BUG\",\n  \"project\": 101,\n  \"description\": \"Clicking Login with an empty password shows a stack trace\",\n  \"priority\": \"HIGH\",\n  \"assignee\": 2,\n  \"createdBy\": 1,\n  \"tags\": \"Authentication\",\n  \"sprint\": \"Sprint 10\",\n  \"storyPoint\": 5\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 201\", () => pm.response.to.have.status(201));",
+                      "pm.test(\"Confirmation message\", () => pm.expect(pm.response.json().message).to.eql(\"Issue created successfully\"));",
+                      "pm.test(\"Default status\", () => pm.expect(pm.response.json().issue.status).to.eql(\"TO DO\"));",
+                      "pm.collectionVariables.set(\"newIssueId\", pm.response.json().issueId);"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Get all issues",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/issues",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "issues"
+                  ]
+                },
+                "description": ""
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Get issue by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/issues/{{newIssueId}}",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "issues",
+                    "{{newIssueId}}"
+                  ]
+                },
+                "description": ""
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Get issues of project 101",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/issues/project/101",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "issues",
+                    "project",
+                    "101"
+                  ]
+                },
+                "description": "Sample data: issues 201, 202, 207 + the new one."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Update issue (owner)",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/issues/{{newIssueId}}",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "issues",
+                    "{{newIssueId}}"
+                  ]
+                },
+                "description": "Only the fields sent are changed; lastUpdated becomes today.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"priority\": \"MEDIUM\",\n  \"assignee\": 3,\n  \"sprint\": \"Sprint 11\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                      "pm.test(\"Assignee changed\", () => pm.expect(pm.response.json().assignee).to.eql(3));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Issues - Assignee view",
+          "item": [
+            {
+              "name": "Get my issues (assignee 3)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/issues/assignee/3",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "issues",
+                    "assignee",
+                    "3"
+                  ]
+                },
+                "description": ""
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Update status only",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/issues/{{newIssueId}}/status",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "issues",
+                    "{{newIssueId}}",
+                    "status"
+                  ]
+                },
+                "description": "Assignees change only the status.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"DEVELOPMENT\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                      "pm.test(\"Status changed\", () => pm.expect(pm.response.json().status).to.eql(\"DEVELOPMENT\"));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Clean up",
+          "item": [
+            {
+              "name": "Delete issue",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/issues/{{newIssueId}}",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "issues",
+                    "{{newIssueId}}"
+                  ]
+                },
+                "description": ""
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Error cases",
+          "item": [
+            {
+              "name": "Create - missing fields (400)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/issues",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "issues"
+                  ]
+                },
+                "description": "",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"summary\": \"\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Create - unknown priority (400)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/issues",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "issues"
+                  ]
+                },
+                "description": "",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"summary\": \"X\",\n  \"project\": 101,\n  \"description\": \"Y\",\n  \"priority\": \"URGENT\",\n  \"assignee\": 2\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Status - unknown value (400)",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/issues/201/status",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "issues",
+                    "201",
+                    "status"
+                  ]
+                },
+                "description": "",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"DONE\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Get issue - not found (404)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/issues/9999",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "issues",
+                    "9999"
+                  ]
+                },
+                "description": ""
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 404\", () => pm.response.to.have.status(404));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Inter-service (via gateway)",
+      "item": [
+        {
+          "name": "User Service \u2192 Issue Service (Feign)",
+          "item": [
+            {
+              "name": "Issues assigned to user 2",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/users/2/issues",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "2",
+                    "issues"
+                  ]
+                },
+                "description": "Sample data: issues 201 and 203."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                      "pm.test(\"Returns a list\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Issues assigned to 'Bob Johnson'",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/users/username/Bob Johnson/issues",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "username",
+                    "Bob Johnson",
+                    "issues"
+                  ]
+                },
+                "description": "Same user as above, looked up by name."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                      "pm.test(\"Returns a list\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Unknown user (404)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/users/9999/issues",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "9999",
+                    "issues"
+                  ]
+                },
+                "description": ""
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 404\", () => pm.response.to.have.status(404));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "User Service \u2192 Project Service (RestTemplate)",
+          "item": [
+            {
+              "name": "Projects owned by user 1",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/users/1/projects",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "1",
+                    "projects"
+                  ]
+                },
+                "description": "Sample data: Project Alpha (101)."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                      "pm.test(\"Returns a list\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Project Service \u2192 Issue Service (Feign)",
+          "item": [
+            {
+              "name": "Issues of project 101",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/projects/101/issues",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "projects",
+                    "101",
+                    "issues"
+                  ]
+                },
+                "description": "Sample data: issues 201, 202, 207."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                      "pm.test(\"Returns a list\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Issues of 'Project Alpha'",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/projects/projectName/Project Alpha/issues",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "projects",
+                    "projectName",
+                    "Project Alpha",
+                    "issues"
+                  ]
+                },
+                "description": ""
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                      "pm.test(\"Returns a list\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Unknown project (404)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/projects/9999/issues",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "projects",
+                    "9999",
+                    "issues"
+                  ]
+                },
+                "description": ""
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 404\", () => pm.response.to.have.status(404));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Issue Service \u2192 Project Service (Feign)",
+          "item": [
+            {
+              "name": "Issues owned by user 1",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/issues/owner/1",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "issues",
+                    "owner",
+                    "1"
+                  ]
+                },
+                "description": "User 1 owns project 101, so: issues 201, 202, 207."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                      "pm.test(\"Returns a list\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Owner with no projects (empty list)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayUrl}}/api/issues/owner/9",
+                  "host": [
+                    "{{gatewayUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "issues",
+                    "owner",
+                    "9"
+                  ]
+                },
+                "description": ""
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                      "pm.test(\"Returns a list\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
