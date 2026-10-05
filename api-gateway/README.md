@@ -43,13 +43,19 @@ Milestone 7 of the Issue Tracking System: the **single entry point** for all cli
 
 Don't add **Spring Web**: the gateway runs on WebFlux, and Spring Web would conflict with it. Then copy `GatewayRoutesConfig.java` and `application.properties` from this folder.
 
-## Showing client-side load balancing
+## Testing client-side load balancing
 
-1. In STS, right-click `user-service` → *Run As → Run Configurations…* → select its Spring Boot configuration → *Duplicate*.
-2. In the copy, on the *Arguments* tab, add the program argument `--server.port=8091` and click *Run*.
-3. The Eureka dashboard now shows **USER-SERVICE (2)**: one instance on 8081, one on 8091.
-4. Call `http://localhost:8080/api/users` several times. The requests alternate between the two instances, which you can see in each instance's console (Hibernate logs a query for each request if you set `spring.jpa.show-sql=true`).
-5. Stop one instance. After Eureka notices (up to about 30 seconds), all requests go to the remaining one.
+Every service adds a response header **`X-Served-By`** (for example `user-service:8091`) and logs `user-service:8091 handled GET /api/users`. That shows which instance answered each request.
+
+1. Start everything as usual: Eureka → the three services → gateway.
+2. **Start a second user-service on port 8091.** In STS: *Run → Run Configurations… → Spring Boot App*, right-click the user-service configuration → *Duplicate*. In the copy, on the *Spring Boot* tab under *Override properties*, add `server.port` = `8091`. Click *Run*.
+3. Open http://localhost:8761. You should see **USER-SERVICE: UP (2)**, with entries ending in `:8081` and `:8091`.
+4. **Wait about 1 minute.** The gateway refreshes its list of instances every ~30 seconds.
+5. Call `http://localhost:8080/api/users` several times, in Postman or the browser. In Postman's response **Headers** tab, `X-Served-By` alternates: `user-service:8081`, `user-service:8091`, `user-service:8081`, …
+   - Quicker: run *Load balancing check* in `postman/api-gateway.postman_collection.json` with the Collection Runner, *Iterations: 10*. The Postman Console (*View → Show Postman Console*) prints `Served by: …` for each call.
+6. **Failover:** stop the 8091 instance. Within ~30–60 seconds every request is served by 8081 (a few may fail during that window).
+
+Inter-service calls are balanced the same way. Run a second `issue-service` with `server.port` = `8093`, then call `http://localhost:8080/api/users/2/issues` several times. The issue-service consoles take turns logging `issue-service:8083 handled GET /api/issues/assignee/2` and `issue-service:8093 handled …`. (Feign's own response header isn't passed back to the client, so watch the consoles here.)
 
 ## When a service is down
 
