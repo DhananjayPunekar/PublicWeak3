@@ -24,6 +24,43 @@
   ],
   "item": [
     {
+      "name": "Load balancing check",
+      "item": [
+        {
+          "name": "GET /api/users (run 10x in Collection Runner)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const servedBy = pm.response.headers.get(\"X-Served-By\");",
+                  "console.log(\"Served by: \" + servedBy);",
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response says which instance served it\", () => pm.expect(servedBy).to.match(/^user-service:\\d+$/));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gatewayUrl}}/api/users",
+              "host": [
+                "{{gatewayUrl}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ]
+            },
+            "description": "Start a second user-service on port 8091 first. Run this request 10 times (Collection Runner \u2192 Iterations: 10) and open the Postman Console: 'Served by' alternates between user-service:8081 and user-service:8091."
+          }
+        }
+      ]
+    },
+    {
       "name": "User Service (via gateway)",
       "item": [
         {
