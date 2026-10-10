@@ -121,3 +121,13 @@ export function validateSignupField(field, value) {
 export function isValid(errors) {
   return Object.values(errors).every((message) => message === '');
 }
+
+/** Initials shown when a user has no profile image, e.g. "Jack Finn" -> "JF". */
+export function getInitials(name) {
+  return (name || '?')
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((word) => word.replace(/[^A-Za-z0-9]/g, '').charAt(0).toUpperCase())
+    .join('');
+}

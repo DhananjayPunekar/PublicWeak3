@@ -41,7 +41,7 @@ React hooks used: `useState`, `useEffect`, `useRef`, `useContext`, `useNavigate`
 | # | Milestone | Status |
 |---|---|---|
 | 1 | Login (React **controlled** form) and Signup (React **uncontrolled** form) | ✅ |
-| 2 | Project Owner Dashboard | ⏳ |
+| 2 | Project Owner Dashboard | ✅ |
 | 3 | Create Project | ⏳ |
 | 4 | Create Issue | ⏳ |
 | 5 | Issue Details | ⏳ |
@@ -61,7 +61,25 @@ React hooks used: `useState`, `useEffect`, `useRef`, `useContext`, `useNavigate`
 - Signup calls `POST /api/users` and shows *"Your account is created successfully"* with a link to the login page (email pre-filled).
 - Server errors (wrong password, duplicate email, gateway down) are shown above the form.
 
-### Assumptions
+### Assumptions (Milestone 1)
 - The back end logs in with email + password only; the role on the login form is checked against the account's role.
 - Login accepts passwords of 6+ characters so the sample accounts (e.g. `abc123`) work; new accounts need a strong password.
 - The logged-in user is kept in `sessionStorage` (the back end issues no token), so it is cleared when the tab closes.
+
+## Milestone 2 – Project Owner Dashboard (`/owner/dashboard`)
+
+| Part | Component | What it does |
+|---|---|---|
+| Sidebar | `components/Sidebar.jsx` | Profile image (initials if none), name, email, *Projects Created* and *Issues Created* counters, links to Project Dashboard / Create Project / Create Issue, Logout |
+| Header | `components/Header.jsx` | Search bar on the left, application name on the right |
+| Dashboard | `components/ProjectDashboard.jsx` | Project drop-down (first project selected by default), project owner name, start/end date as dd-mm-yyyy, filters by assignee and priority, "No Projects Available!" with a Create Project link |
+| Issue board | `components/IssueBoard.jsx` | Cards in To Do / Development / Testing / Completed with ID, creation date, title, description, assignee photo + name and priority |
+
+APIs: `GET /api/projects/owner/{ownerId}`, `GET /api/projects/{projectId}/issues`, `GET /api/issues/owner/{ownerId}`, `GET /api/users`.
+Search (RegEx on summary/description), assignee filter and priority filter all run in the browser (`filterIssues` in `model/Issue.js`).
+
+### Assumptions (Milestone 2)
+- *Issues Created* counts the issues of every project the owner owns.
+- The assignee filter lists the team members of the selected project, i.e. everyone assigned to one of its issues.
+- Invalid RegEx text in the search bar (e.g. `(`) is searched as plain text.
+- Create Project and Create Issue links lead back to the dashboard until Milestones 3 and 4.
