@@ -242,3 +242,32 @@ body {
   border-left: 4px solid var(--its-accent);
   padding-left: 0.6rem;
 }
+
+/* --------------------------------------------------------------------------
+   Issue details
+   -------------------------------------------------------------------------- */
+.issue-details {
+  border-radius: var(--its-radius);
+}
+
+.issue-details-title {
+  background-color: #f8fafc;
+  border-left: 4px solid var(--its-accent);
+}
+
+.issue-details-title h1 {
+  color: var(--its-primary-hover);
+}
+
+.issue-description {
+  white-space: pre-line;
+}
+
+.issue-side-panel {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.fact-label {
+  min-width: 96px;
+}
