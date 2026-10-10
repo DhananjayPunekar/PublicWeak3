@@ -271,3 +271,18 @@ body {
 .fact-label {
   min-width: 96px;
 }
+
+/* Amber call-to-action used for "Save Updates". */
+.btn-accent {
+  --bs-btn-color: #1f2937;
+  --bs-btn-bg: var(--its-accent);
+  --bs-btn-border-color: var(--its-accent);
+  --bs-btn-hover-color: #111827;
+  --bs-btn-hover-bg: #d97706;
+  --bs-btn-hover-border-color: #d97706;
+  --bs-btn-active-bg: #b45309;
+  --bs-btn-disabled-color: #6b7280;
+  --bs-btn-disabled-bg: #fde68a;
+  --bs-btn-disabled-border-color: #fde68a;
+  font-weight: 600;
+}
