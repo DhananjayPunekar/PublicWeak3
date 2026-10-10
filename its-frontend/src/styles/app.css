@@ -286,3 +286,13 @@ body {
   --bs-btn-disabled-border-color: #fde68a;
   font-weight: 600;
 }
+
+/* Notification toasts (issue status changes). */
+.its-toast {
+  background-color: var(--its-sidebar-bg);
+  color: #fff;
+}
+
+.its-toast svg {
+  color: var(--its-accent);
+}

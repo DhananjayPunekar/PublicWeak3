@@ -11,6 +11,7 @@ import { useForm } from '../../hooks/useForm';
 import { useIssueWithProject } from '../../hooks/useIssueWithProject';
 import { useUsers } from '../../hooks/useUsers';
 import { issueService } from '../../services/issueService';
+import { publishIssueSaved } from '../../services/issueEvents';
 import { projectService } from '../../services/projectService';
 import { getErrorMessage } from '../../services/httpClient';
 import { PATHS } from '../../routes/paths';
@@ -52,6 +53,7 @@ function EditIssueForm({ issue, projects, users }: EditIssueFormProps) {
     setServerError(null);
     try {
       const updated = await issueService.updateIssue(issue.id, toUpdateRequest(values));
+      publishIssueSaved(issue, updated);
       refreshStats();
       const state: NavigationState = { flash: `Issue #${updated.id} updated successfully.` };
       navigate(PATHS.ownerIssue(updated.id), { state });
