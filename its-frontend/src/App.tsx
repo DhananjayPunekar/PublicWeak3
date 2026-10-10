@@ -6,6 +6,8 @@ import { SignupPage } from './pages/auth/SignupPage';
 import { ProjectDashboardPage } from './pages/owner/ProjectDashboardPage';
 import { CreateProjectPage } from './pages/owner/CreateProjectPage';
 import { CreateIssuePage } from './pages/owner/CreateIssuePage';
+import { IssueDetailsPage } from './pages/owner/IssueDetailsPage';
+import { EditIssuePage } from './pages/owner/EditIssuePage';
 import { ComingSoonPage } from './pages/ComingSoonPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { useAuth } from './hooks/useAuth';
@@ -31,6 +33,8 @@ export function App() {
           <Route path={PATHS.ownerDashboard} element={<ProjectDashboardPage />} />
           <Route path={PATHS.createProject} element={<CreateProjectPage />} />
           <Route path={PATHS.createIssue} element={<CreateIssuePage />} />
+          <Route path={PATHS.ownerIssue(':issueId')} element={<IssueDetailsPage />} />
+          <Route path={PATHS.editIssue(':issueId')} element={<EditIssuePage />} />
         </Route>
       </Route>
 

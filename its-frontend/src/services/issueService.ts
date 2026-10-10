@@ -1,6 +1,6 @@
 import { http } from './httpClient';
 import { ENDPOINTS } from './endpoints';
-import type { Issue, IssueCreatedResponse, IssueRequest } from '../models/issue';
+import type { Issue, IssueCreatedResponse, IssueRequest, UpdateIssueRequest } from '../models/issue';
 
 /**
  * Calls to issue-service (through the API Gateway).
@@ -14,4 +14,7 @@ export const issueService = {
 
   /** POST /api/issues - creates an issue and returns its ID. */
   createIssue: (request: IssueRequest) => http.post<IssueCreatedResponse>(ENDPOINTS.issues, request),
+
+  /** PUT /api/issues/{id} - updates the given fields (Project Owner). */
+  updateIssue: (issueId: number, request: UpdateIssueRequest) => http.put<Issue>(ENDPOINTS.issue(issueId), request),
 };
