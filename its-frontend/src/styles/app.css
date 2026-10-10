@@ -1,0 +1,86 @@
+/* ==========================================================================
+   Issue Tracking System - theme on top of Bootstrap 5.3
+   Palette: deep slate sidebar, teal primary, amber accents.
+   ========================================================================== */
+
+:root {
+  --its-primary: #0f766e;        /* teal-700 */
+  --its-primary-hover: #115e59;  /* teal-800 */
+  --its-primary-soft: #ccfbf1;   /* teal-100 */
+  --its-accent: #f59e0b;         /* amber-500 */
+  --its-sidebar-bg: #0f172a;     /* slate-900 */
+  --its-sidebar-bg-2: #1e293b;   /* slate-800 */
+  --its-sidebar-text: #cbd5e1;   /* slate-300 */
+  --its-surface: #f1f5f9;        /* slate-100 - page background */
+  --its-radius: 0.75rem;
+
+  /* Status colours used by the board columns. */
+  --its-status-todo: #dc2626;
+  --its-status-dev: #f59e0b;
+  --its-status-test: #0284c7;
+  --its-status-done: #16a34a;
+
+  /* Make Bootstrap's "primary" our teal. */
+  --bs-primary: var(--its-primary);
+  --bs-primary-rgb: 15, 118, 110;
+  --bs-link-color: var(--its-primary);
+  --bs-link-color-rgb: 15, 118, 110;
+  --bs-link-hover-color: var(--its-primary-hover);
+  --bs-body-font-family: 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+body {
+  background-color: var(--its-surface);
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--its-primary);
+  --bs-btn-border-color: var(--its-primary);
+  --bs-btn-hover-bg: var(--its-primary-hover);
+  --bs-btn-hover-border-color: var(--its-primary-hover);
+  --bs-btn-active-bg: var(--its-primary-hover);
+  --bs-btn-active-border-color: var(--its-primary-hover);
+  --bs-btn-disabled-bg: #5eaaa3;
+  --bs-btn-disabled-border-color: #5eaaa3;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--its-primary);
+  --bs-btn-border-color: var(--its-primary);
+  --bs-btn-hover-bg: var(--its-primary);
+  --bs-btn-hover-border-color: var(--its-primary);
+  --bs-btn-active-bg: var(--its-primary-hover);
+  --bs-btn-disabled-color: #5eaaa3;
+  --bs-btn-disabled-border-color: #5eaaa3;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #5eead4;
+  box-shadow: 0 0 0 0.2rem rgba(20, 184, 166, 0.25);
+}
+
+.text-primary {
+  color: var(--its-primary) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Login / Signup
+   -------------------------------------------------------------------------- */
+.auth-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(20, 184, 166, 0.25), transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(245, 158, 11, 0.18), transparent 40%),
+    var(--its-sidebar-bg);
+}
+
+.auth-card {
+  max-width: 460px;
+  border-radius: var(--its-radius);
+}
+
+.auth-card-banner {
+  background: linear-gradient(90deg, var(--its-primary), #14b8a6);
+  letter-spacing: 0.02em;
+}
