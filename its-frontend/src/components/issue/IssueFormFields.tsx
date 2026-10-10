@@ -1,5 +1,6 @@
 import type { ChangeEvent, FocusEvent } from 'react';
-import { FormGroup, controlClass } from '../common/FormGroup';
+import { FormGroup } from '../common/FormGroup';
+import { controlClass } from '../../utils/formClasses';
 import { ISSUE_TYPES, PRIORITIES, STATUSES } from '../../models/issue';
 import type { FormErrors } from '../../hooks/useForm';
 import type { Project } from '../../models/project';

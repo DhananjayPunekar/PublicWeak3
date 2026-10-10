@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FormGroup, controlClass } from '../../components/common/FormGroup';
+import { FormGroup } from '../../components/common/FormGroup';
+import { controlClass } from '../../utils/formClasses';
 import { AlertMessage } from '../../components/common/AlertMessage';
 import { useLayoutContext } from '../../components/layout/layoutContext';
 import { useCurrentUser } from '../../hooks/useAuth';
