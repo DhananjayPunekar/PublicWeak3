@@ -35,3 +35,4 @@ To use a different gateway URL, copy `.env.example` to `.env.local` and change `
 | 1 | Login (React **controlled** form) and Signup (React **uncontrolled** form) | ✅ |
 | 2 | Project Owner Dashboard: project drop-down, owner and dates, issue board, assignee/priority filters, RegEx search, "No Projects Available" screen | ✅ |
 | 3 | Create Project: validated form, owner drop-down from the Users API, date range check, redirect to the new project's dashboard | ✅ |
+| 4 | Create Issue: all field validations (prime story points, numeric sprint, length limits), project and assignee drop-downs, redirect to the project board | ✅ |
