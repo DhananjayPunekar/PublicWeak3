@@ -1,8 +1,10 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { ProtectedRoute } from './components/common/ProtectedRoute';
+import { AppLayout } from './components/layout/AppLayout';
 import { LoginPage } from './pages/auth/LoginPage';
 import { SignupPage } from './pages/auth/SignupPage';
-import { WelcomePage } from './pages/WelcomePage';
+import { ProjectDashboardPage } from './pages/owner/ProjectDashboardPage';
+import { ComingSoonPage } from './pages/ComingSoonPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { useAuth } from './hooks/useAuth';
 import { homePathFor, PATHS } from './routes/paths';
@@ -23,12 +25,18 @@ export function App() {
 
       {/* Project Owner area */}
       <Route element={<ProtectedRoute role="productOwner" />}>
-        <Route path={PATHS.ownerDashboard} element={<WelcomePage />} />
+        <Route element={<AppLayout />}>
+          <Route path={PATHS.ownerDashboard} element={<ProjectDashboardPage />} />
+          <Route path={PATHS.createProject} element={<ComingSoonPage title="Create Project" />} />
+          <Route path={PATHS.createIssue} element={<ComingSoonPage title="Create Issue" />} />
+        </Route>
       </Route>
 
       {/* Assignee area */}
       <Route element={<ProtectedRoute role="assignee" />}>
-        <Route path={PATHS.assigneeDashboard} element={<WelcomePage />} />
+        <Route element={<AppLayout />}>
+          <Route path={PATHS.assigneeDashboard} element={<ComingSoonPage title="Assignee Dashboard" />} />
+        </Route>
       </Route>
 
       <Route path="*" element={<NotFoundPage />} />

@@ -1,6 +1,7 @@
 import { http } from './httpClient';
 import { ENDPOINTS } from './endpoints';
 import type { LoginRequest, LoginResponse, SignUpRequest, SignUpResponse, User } from '../models/user';
+import type { Issue } from '../models/issue';
 
 /**
  * Calls to user-service (through the API Gateway).
@@ -17,4 +18,7 @@ export const userService = {
 
   /** GET /api/users/{userId} - one user. */
   getUserById: (userId: number) => http.get<User>(ENDPOINTS.user(userId)),
+
+  /** GET /api/users/{userId}/issues - issues assigned to the user (user-service asks issue-service). */
+  getAssignedIssues: (userId: number) => http.get<Issue[]>(ENDPOINTS.userIssues(userId)),
 };
