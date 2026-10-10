@@ -4,6 +4,7 @@ import { AppLayout } from './components/layout/AppLayout';
 import { LoginPage } from './pages/auth/LoginPage';
 import { SignupPage } from './pages/auth/SignupPage';
 import { ProjectDashboardPage } from './pages/owner/ProjectDashboardPage';
+import { CreateProjectPage } from './pages/owner/CreateProjectPage';
 import { ComingSoonPage } from './pages/ComingSoonPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { useAuth } from './hooks/useAuth';
@@ -27,7 +28,7 @@ export function App() {
       <Route element={<ProtectedRoute role="productOwner" />}>
         <Route element={<AppLayout />}>
           <Route path={PATHS.ownerDashboard} element={<ProjectDashboardPage />} />
-          <Route path={PATHS.createProject} element={<ComingSoonPage title="Create Project" />} />
+          <Route path={PATHS.createProject} element={<CreateProjectPage />} />
           <Route path={PATHS.createIssue} element={<ComingSoonPage title="Create Issue" />} />
         </Route>
       </Route>
