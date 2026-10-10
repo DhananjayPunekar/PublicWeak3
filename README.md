@@ -13,6 +13,7 @@ See [PROJECT_STEPS.md](PROJECT_STEPS.md) for the full plan.
 | [issue-service](issue-service/) | 8083 | `issue_db` | Milestone 3 ✅ |
 | [eureka-server](eureka-server/) | 8761 | – | Milestone 4 ✅ |
 | [api-gateway](api-gateway/) | 8080 | – | Milestone 7 ✅ |
+| [its-frontend](its-frontend/) (React + Bootstrap) | 3000 | – | Week 4 – Milestones 1-8 ✅ |
 
 ## Getting started
 
@@ -23,6 +24,18 @@ See [PROJECT_STEPS.md](PROJECT_STEPS.md) for the full plan.
    Check http://localhost:8761: all four should be listed as UP.
 5. Call everything through the gateway: **http://localhost:8080**/api/users, /api/projects, /api/issues …
 6. Import the Postman collections from [postman/](postman/). `api-gateway.postman_collection.json` sends every request through the gateway.
+
+## Front end (Week 4) ✅
+
+The React + TypeScript + Bootstrap UI lives in [`its-frontend/`](its-frontend/). With the back end running:
+
+```bash
+cd its-frontend
+npm install
+npm run dev        # http://localhost:3000 - /api calls are proxied to the gateway on 8080
+```
+
+Login and sign-up, Project Owner dashboard, create project, create/edit issue, issue details, assignee dashboard and status updates. See [its-frontend/README.md](its-frontend/README.md) for screens, validations and assumptions, and [its-frontend/docs/API_INTEGRATION.md](its-frontend/docs/API_INTEGRATION.md) for how each screen uses the API.
 
 ## Inter-service communication (Milestone 5) ✅
 
@@ -45,4 +58,5 @@ project-service/  Milestone 2 - project CRUD, projects by owner
 issue-service/    Milestone 3 - issue CRUD, status updates
 eureka-server/    Milestone 4 - service registry (dashboard on port 8761)
 api-gateway/      Milestone 7 - single entry point on port 8080, routes via Eureka
+its-frontend/     Week 4 - React + Bootstrap front end (port 3000)
 ```

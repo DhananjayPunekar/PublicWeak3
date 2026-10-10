@@ -1,7 +1,8 @@
 import { useMemo, useState, type ChangeEvent, type FocusEvent, type FormEvent } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { AuthLayout } from '../../components/layout/AuthLayout';
-import { FormGroup, controlClass } from '../../components/common/FormGroup';
+import { FormGroup } from '../../components/common/FormGroup';
+import { controlClass } from '../../utils/formClasses';
 import { AlertMessage } from '../../components/common/AlertMessage';
 import { useAuth } from '../../hooks/useAuth';
 import { userService } from '../../services/userService';
