@@ -229,3 +229,16 @@ body {
   color: var(--its-primary-hover);
   font-weight: 600;
 }
+
+/* --------------------------------------------------------------------------
+   Forms (create / edit screens)
+   -------------------------------------------------------------------------- */
+.form-card {
+  max-width: 980px;
+  border-radius: var(--its-radius);
+}
+
+.form-card .card-body h1 {
+  border-left: 4px solid var(--its-accent);
+  padding-left: 0.6rem;
+}

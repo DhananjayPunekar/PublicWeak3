@@ -3,12 +3,14 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Header } from './Header';
 import { Sidebar, type SidebarStat } from './Sidebar';
 import type { LayoutContextValue } from './layoutContext';
+import { AlertMessage } from '../common/AlertMessage';
 import { useAuth, useCurrentUser } from '../../hooks/useAuth';
 import { useApi } from '../../hooks/useApi';
 import { projectService } from '../../services/projectService';
 import { issueService } from '../../services/issueService';
 import { userService } from '../../services/userService';
 import { PATHS } from '../../routes/paths';
+import { readFlash } from '../../routes/navigationState';
 import type { User } from '../../models/user';
 
 /** Counters shown in the sidebar for each role. */
@@ -46,6 +48,11 @@ export function AppLayout() {
   const statsLoader = useCallback(() => loadStats(user), [user]);
   const { data: stats, reload: refreshStats } = useApi(statsLoader);
 
+  /** One-off success message passed by the previous page (e.g. "Project created"). */
+  const flash = readFlash(location.state);
+  /** Location key whose flash message the user closed. */
+  const [dismissedFlashKey, setDismissedFlashKey] = useState<string | null>(null);
+
   /** The search bar only makes sense on the dashboards (where issues are listed). */
   const showSearch = location.pathname.endsWith('/dashboard');
 
@@ -74,6 +81,11 @@ export function AppLayout() {
       <div className="app-main flex-grow-1 d-flex flex-column min-w-0">
         <Header showSearch={showSearch} searchText={searchText} onSearchChange={setSearchText} />
         <main className="app-content flex-grow-1 p-3 p-md-4">
+          {flash && dismissedFlashKey !== location.key && (
+            <AlertMessage variant="success" onClose={() => setDismissedFlashKey(location.key)}>
+              {flash}
+            </AlertMessage>
+          )}
           <Outlet context={outletContext} />
         </main>
       </div>
