@@ -55,7 +55,11 @@ function describeFailure(status: number, body: unknown): ApiError {
   if (isApiErrorBody(body)) {
     const fieldErrors = body.fieldErrors ?? {};
     const details = Object.values(fieldErrors);
-    const base = body.message ?? body.error ?? `Request failed with status ${status}`;
+    // The gateway's own error bodies (e.g. 503 when a service is not registered yet) have no message.
+    const fallback = status >= 500
+      ? `A back-end service is not available right now (HTTP ${status}). Please try again in a moment.`
+      : body.error ?? `Request failed with status ${status}`;
+    const base = body.message || fallback;
     // "Validation failed" alone is not helpful - append the field messages.
     const message = details.length > 0 ? `${base}: ${details.join('; ')}` : base;
     return new ApiError(status, message, fieldErrors);

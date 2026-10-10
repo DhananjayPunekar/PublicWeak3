@@ -38,3 +38,4 @@ To use a different gateway URL, copy `.env.example` to `.env.local` and change `
 | 4 | Create Issue: all field validations (prime story points, numeric sprint, length limits), project and assignee drop-downs, redirect to the project board | ✅ |
 | 5 | Issue Details (Project Owner) and Edit Issue: pre-filled form with the edit validations, Reset to the loaded values | ✅ |
 | 6 | Assignee Dashboard and Assignee Issue Details: own issues as cards, RegEx search, status drop-down with "Save Updates" | ✅ |
+| 7 | Back-end API integration: typed models and services for every screen, error handling, session re-check, issue-event hub with status-change notifications — see [docs/API_INTEGRATION.md](docs/API_INTEGRATION.md) | ✅ |

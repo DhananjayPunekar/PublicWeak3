@@ -10,6 +10,7 @@ import { useApi } from '../../hooks/useApi';
 import { useForm } from '../../hooks/useForm';
 import { useUsers } from '../../hooks/useUsers';
 import { issueService } from '../../services/issueService';
+import { issueEvents } from '../../services/issueEvents';
 import { projectService } from '../../services/projectService';
 import { getErrorMessage } from '../../services/httpClient';
 import { PATHS } from '../../routes/paths';
@@ -61,6 +62,7 @@ export function CreateIssuePage() {
     setServerError(null);
     try {
       const response = await issueService.createIssue(toIssueRequest(values, user.userId));
+      issueEvents.emit({ type: 'issue-created', issue: response.issue });
       refreshStats();
       const state: NavigationState = { flash: `Issue #${response.issueId} "${response.issue.summary}" created successfully.` };
       navigate(`${PATHS.ownerDashboard}?projectId=${response.issue.project}`, { state });

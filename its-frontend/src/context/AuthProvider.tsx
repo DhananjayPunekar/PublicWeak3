@@ -1,6 +1,8 @@
-import { useCallback, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { AuthContext, type AuthContextValue } from './authContext';
 import { isRole, type User } from '../models/user';
+import { userService } from '../services/userService';
+import { ApiError } from '../services/httpClient';
 
 /** sessionStorage key holding the logged-in user (cleared when the tab closes). */
 const SESSION_KEY = 'its.session.user';
@@ -61,6 +63,33 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
     setUser(null);
   }, []);
+
+  // On start-up, re-check a restored session with the back end: refresh the
+  // stored details, or log out if the account no longer exists. If the server
+  // cannot be reached the session is kept (pages show their own errors).
+  useEffect(() => {
+    const restored = readStoredUser();
+    if (!restored) {
+      return;
+    }
+    let active = true;
+    userService.getUserById(restored.userId)
+      .then((fresh) => {
+        if (active && fresh.role === restored.role) {
+          login(fresh);
+        } else if (active) {
+          logout();
+        }
+      })
+      .catch((error: unknown) => {
+        if (active && error instanceof ApiError && error.status === 404) {
+          logout();
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, [login, logout]);
 
   const value = useMemo<AuthContextValue>(() => ({ user, login, logout }), [user, login, logout]);
 

@@ -4,6 +4,7 @@ import { Header } from './Header';
 import { Sidebar, type SidebarStat } from './Sidebar';
 import type { LayoutContextValue } from './layoutContext';
 import { AlertMessage } from '../common/AlertMessage';
+import { NotificationToasts } from '../common/NotificationToasts';
 import { useAuth, useCurrentUser } from '../../hooks/useAuth';
 import { useApi } from '../../hooks/useApi';
 import { projectService } from '../../services/projectService';
@@ -89,6 +90,7 @@ export function AppLayout() {
           <Outlet context={outletContext} />
         </main>
       </div>
+      <NotificationToasts />
     </div>
   );
 }

@@ -6,9 +6,10 @@ import { IssueDetailsView } from '../../components/issue/IssueDetailsView';
 import { useCurrentUser } from '../../hooks/useAuth';
 import { useIssueWithProject } from '../../hooks/useIssueWithProject';
 import { issueService } from '../../services/issueService';
+import { publishIssueSaved } from '../../services/issueEvents';
 import { getErrorMessage } from '../../services/httpClient';
 import { PATHS } from '../../routes/paths';
-import { STATUSES, statusLabel, type Issue, type IssueStatus } from '../../models/issue';
+import { STATUSES, type Issue, type IssueStatus } from '../../models/issue';
 
 /**
  * Assignee Issue Details: all issue fields plus a status drop-down. "Save
@@ -26,8 +27,8 @@ export function AssigneeIssueDetailsPage() {
   const [selectedStatus, setSelectedStatus] = useState<IssueStatus | ''>('');
   /** True while the status is being saved. */
   const [saving, setSaving] = useState(false);
-  /** Result of the last save. */
-  const [message, setMessage] = useState<{ variant: 'success' | 'danger'; text: string } | null>(null);
+  /** Error of the last save (success is announced by a notification toast). */
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   // Copy the loaded issue into local state so it can be updated after saving.
   useEffect(() => {
@@ -62,13 +63,13 @@ export function AssigneeIssueDetailsPage() {
       return;
     }
     setSaving(true);
-    setMessage(null);
+    setSaveError(null);
     try {
       const updated = await issueService.updateStatus(issue.id, selectedStatus);
+      publishIssueSaved(issue, updated);
       setIssue(updated);
-      setMessage({ variant: 'success', text: `Status changed to ${statusLabel(updated.status)}.` });
-    } catch (saveError) {
-      setMessage({ variant: 'danger', text: getErrorMessage(saveError) });
+    } catch (error) {
+      setSaveError(getErrorMessage(error));
     } finally {
       setSaving(false);
     }
@@ -76,9 +77,9 @@ export function AssigneeIssueDetailsPage() {
 
   return (
     <>
-      {message && (
-        <AlertMessage variant={message.variant} onClose={() => setMessage(null)}>
-          {message.text}
+      {saveError && (
+        <AlertMessage variant="danger" onClose={() => setSaveError(null)}>
+          {saveError}
         </AlertMessage>
       )}
       {!isMine && <AlertMessage variant="warning">This issue is not assigned to you, so its status cannot be changed.</AlertMessage>}
@@ -96,7 +97,7 @@ export function AssigneeIssueDetailsPage() {
           <>
             <label htmlFor="statusSelect" className="form-label small fw-semibold text-secondary-emphasis">Update status</label>
             <select id="statusSelect" className="form-select" value={selectedStatus} disabled={saving}
-              onChange={(event) => { setSelectedStatus(event.target.value as IssueStatus); setMessage(null); }}>
+              onChange={(event) => { setSelectedStatus(event.target.value as IssueStatus); setSaveError(null); }}>
               {STATUSES.map((status) => (
                 <option key={status.value} value={status.value}>{status.label}</option>
               ))}
