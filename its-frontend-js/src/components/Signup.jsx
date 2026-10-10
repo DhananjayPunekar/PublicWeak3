@@ -1,6 +1,5 @@
 import { useContext, useRef, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import AuthCard from './AuthCard';
 import { AuthContext } from '../context/AuthContext';
 import userService from '../service/userService';
 import { ROLE_OPTIONS, SIGNUP_FIELDS, getHomePath, isValid, validateSignupField } from '../model/User';
@@ -125,74 +124,84 @@ function Signup() {
   }
 
   return (
-    <AuthCard title="Signup" subtitle="Create an account as a Project Owner or an Assignee">
-      {created && (
-        <div className="alert alert-success py-2" role="alert">
-          <strong>{created.message}.</strong>{' '}
-          <Link to="/login" state={{ email: created.email }} className="alert-link">Click here to login</Link>
+    // Centered card with the application name on top
+    <main className="min-vh-100 d-flex align-items-center justify-content-center bg-dark bg-gradient p-3">
+      <div className="card shadow-lg border-0 w-100" style={{ maxWidth: '440px' }}>
+        <div className="card-header bg-primary bg-gradient text-white text-center fw-bold py-3">
+          Issue Tracking System
         </div>
-      )}
-      {serverError && <div className="alert alert-danger py-2" role="alert">{serverError}</div>}
-
-      <form noValidate onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label htmlFor="name" className="form-label fw-semibold small">Name <span className="text-danger">*</span></label>
-          <input id="name" name="name" type="text" placeholder="Enter name" ref={nameRef}
-            className={inputClass('name')} onInput={handleInput} onBlur={handleBlur} />
-          {errorText('name')}
-        </div>
-
-        <div className="mb-3">
-          <label htmlFor="email" className="form-label fw-semibold small">Email address <span className="text-danger">*</span></label>
-          <input id="email" name="email" type="email" placeholder="Enter email" ref={emailRef}
-            className={inputClass('email')} onInput={handleInput} onBlur={handleBlur} />
-          {errorText('email')}
-        </div>
-
-        <div className="mb-3">
-          <label htmlFor="password" className="form-label fw-semibold small">Password <span className="text-danger">*</span></label>
-          <input id="password" name="password" type="password" placeholder="Password" ref={passwordRef}
-            className={inputClass('password')} onInput={handleInput} onBlur={handleBlur} />
-          {errorText('password') || (
-            <div className="form-text">At least 8 characters with an uppercase letter, a lowercase letter, a number and a special character.</div>
+        <div className="card-body p-4">
+          <h1 className="h4 text-center fw-bold text-body mb-1">Signup</h1>
+          <p className="text-center text-secondary small mb-4">Create an account as a Project Owner or an Assignee</p>
+          {created && (
+            <div className="alert alert-success py-2" role="alert">
+              <strong>{created.message}.</strong>{' '}
+              <Link to="/login" state={{ email: created.email }} className="alert-link">Click here to login</Link>
+            </div>
           )}
+          {serverError && <div className="alert alert-danger py-2" role="alert">{serverError}</div>}
+
+          <form noValidate onSubmit={handleSubmit}>
+            <div className="mb-3">
+              <label htmlFor="name" className="form-label fw-semibold small">Name <span className="text-danger">*</span></label>
+              <input id="name" name="name" type="text" placeholder="Enter name" ref={nameRef}
+                className={inputClass('name')} onInput={handleInput} onBlur={handleBlur} />
+              {errorText('name')}
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="email" className="form-label fw-semibold small">Email address <span className="text-danger">*</span></label>
+              <input id="email" name="email" type="email" placeholder="Enter email" ref={emailRef}
+                className={inputClass('email')} onInput={handleInput} onBlur={handleBlur} />
+              {errorText('email')}
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="password" className="form-label fw-semibold small">Password <span className="text-danger">*</span></label>
+              <input id="password" name="password" type="password" placeholder="Password" ref={passwordRef}
+                className={inputClass('password')} onInput={handleInput} onBlur={handleBlur} />
+              {errorText('password') || (
+                <div className="form-text">At least 8 characters with an uppercase letter, a lowercase letter, a number and a special character.</div>
+              )}
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="profileImage" className="form-label fw-semibold small">Profile <span className="text-danger">*</span></label>
+              <div className="d-flex align-items-center gap-2">
+                <input id="profileImage" name="profileImage" type="url" placeholder="Provide profile image url" ref={profileImageRef}
+                  className={inputClass('profileImage')} onInput={handleInput} onBlur={handleBlur} />
+                {previewUrl && (
+                  <img src={previewUrl} alt="Profile preview" width="38" height="38"
+                    className="rounded-circle border object-fit-cover flex-shrink-0" />
+                )}
+              </div>
+              {errorText('profileImage')}
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="role" className="form-label fw-semibold small">Role <span className="text-danger">*</span></label>
+              <select id="role" name="role" defaultValue="" ref={roleRef}
+                className={inputClass('role', 'form-select')} onChange={handleInput} onBlur={handleBlur}>
+                <option value="">Select your role</option>
+                {ROLE_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
+              {errorText('role')}
+            </div>
+
+            <button type="submit" className="btn btn-primary w-100" disabled={!isValid(errors) || loading}>
+              {loading && <span className="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>}
+              {loading ? 'Creating account...' : 'Signup'}
+            </button>
+          </form>
+
+          <p className="text-center small mt-4 mb-0">
+            Already have an account? <Link to="/login">Login</Link>
+          </p>
         </div>
-
-        <div className="mb-3">
-          <label htmlFor="profileImage" className="form-label fw-semibold small">Profile <span className="text-danger">*</span></label>
-          <div className="d-flex align-items-center gap-2">
-            <input id="profileImage" name="profileImage" type="url" placeholder="Provide profile image url" ref={profileImageRef}
-              className={inputClass('profileImage')} onInput={handleInput} onBlur={handleBlur} />
-            {previewUrl && (
-              <img src={previewUrl} alt="Profile preview" width="38" height="38"
-                className="rounded-circle border object-fit-cover flex-shrink-0" />
-            )}
-          </div>
-          {errorText('profileImage')}
-        </div>
-
-        <div className="mb-4">
-          <label htmlFor="role" className="form-label fw-semibold small">Role <span className="text-danger">*</span></label>
-          <select id="role" name="role" defaultValue="" ref={roleRef}
-            className={inputClass('role', 'form-select')} onChange={handleInput} onBlur={handleBlur}>
-            <option value="">Select your role</option>
-            {ROLE_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>{option.label}</option>
-            ))}
-          </select>
-          {errorText('role')}
-        </div>
-
-        <button type="submit" className="btn btn-primary w-100" disabled={!isValid(errors) || loading}>
-          {loading && <span className="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>}
-          {loading ? 'Creating account...' : 'Signup'}
-        </button>
-      </form>
-
-      <p className="text-center small mt-4 mb-0">
-        Already have an account? <Link to="/login">Login</Link>
-      </p>
-    </AuthCard>
+      </div>
+    </main>
   );
 }
 

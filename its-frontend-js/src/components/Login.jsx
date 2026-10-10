@@ -1,6 +1,5 @@
 import { useContext, useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import AuthCard from './AuthCard';
 import { AuthContext } from '../context/AuthContext';
 import userService from '../service/userService';
 import { EMPTY_LOGIN, ROLE_OPTIONS, getHomePath, getRoleLabel, isValid, validateLogin } from '../model/User';
@@ -74,46 +73,56 @@ function Login() {
   }
 
   return (
-    <AuthCard title="Login" subtitle="Sign in to manage your projects and issues">
-      {serverError && <div className="alert alert-danger py-2" role="alert">{serverError}</div>}
-
-      <form noValidate onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label htmlFor="email" className="form-label fw-semibold small">Email address <span className="text-danger">*</span></label>
-          <input id="email" name="email" type="email" placeholder="Enter email" className={inputClass('email')}
-            value={form.email} onChange={handleChange} onBlur={handleBlur} />
-          {touched.email && errors.email && <div id="email-error" className="invalid-feedback">{errors.email}</div>}
+    // Centered card with the application name on top
+    <main className="min-vh-100 d-flex align-items-center justify-content-center bg-dark bg-gradient p-3">
+      <div className="card shadow-lg border-0 w-100" style={{ maxWidth: '440px' }}>
+        <div className="card-header bg-primary bg-gradient text-white text-center fw-bold py-3">
+          Issue Tracking System
         </div>
+        <div className="card-body p-4">
+          <h1 className="h4 text-center fw-bold text-body mb-1">Login</h1>
+          <p className="text-center text-secondary small mb-4">Sign in to manage your projects and issues</p>
+          {serverError && <div className="alert alert-danger py-2" role="alert">{serverError}</div>}
 
-        <div className="mb-3">
-          <label htmlFor="password" className="form-label fw-semibold small">Password <span className="text-danger">*</span></label>
-          <input id="password" name="password" type="password" placeholder="Password" className={inputClass('password')}
-            value={form.password} onChange={handleChange} onBlur={handleBlur} />
-          {touched.password && errors.password && <div id="password-error" className="invalid-feedback">{errors.password}</div>}
+          <form noValidate onSubmit={handleSubmit}>
+            <div className="mb-3">
+              <label htmlFor="email" className="form-label fw-semibold small">Email address <span className="text-danger">*</span></label>
+              <input id="email" name="email" type="email" placeholder="Enter email" className={inputClass('email')}
+                value={form.email} onChange={handleChange} onBlur={handleBlur} />
+              {touched.email && errors.email && <div id="email-error" className="invalid-feedback">{errors.email}</div>}
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="password" className="form-label fw-semibold small">Password <span className="text-danger">*</span></label>
+              <input id="password" name="password" type="password" placeholder="Password" className={inputClass('password')}
+                value={form.password} onChange={handleChange} onBlur={handleBlur} />
+              {touched.password && errors.password && <div id="password-error" className="invalid-feedback">{errors.password}</div>}
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="role" className="form-label fw-semibold small">Role <span className="text-danger">*</span></label>
+              <select id="role" name="role" className={inputClass('role', 'form-select')}
+                value={form.role} onChange={handleChange} onBlur={handleBlur}>
+                <option value="">Select your role</option>
+                {ROLE_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
+              {touched.role && errors.role && <div id="role-error" className="invalid-feedback">{errors.role}</div>}
+            </div>
+
+            <button type="submit" className="btn btn-primary w-100" disabled={!formValid || loading}>
+              {loading && <span className="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>}
+              {loading ? 'Signing in...' : 'Login'}
+            </button>
+          </form>
+
+          <p className="text-center small mt-4 mb-0">
+            Don&apos;t have an account? <Link to="/signup">Signup</Link>
+          </p>
         </div>
-
-        <div className="mb-4">
-          <label htmlFor="role" className="form-label fw-semibold small">Role <span className="text-danger">*</span></label>
-          <select id="role" name="role" className={inputClass('role', 'form-select')}
-            value={form.role} onChange={handleChange} onBlur={handleBlur}>
-            <option value="">Select your role</option>
-            {ROLE_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>{option.label}</option>
-            ))}
-          </select>
-          {touched.role && errors.role && <div id="role-error" className="invalid-feedback">{errors.role}</div>}
-        </div>
-
-        <button type="submit" className="btn btn-primary w-100" disabled={!formValid || loading}>
-          {loading && <span className="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>}
-          {loading ? 'Signing in...' : 'Login'}
-        </button>
-      </form>
-
-      <p className="text-center small mt-4 mb-0">
-        Don&apos;t have an account? <Link to="/signup">Signup</Link>
-      </p>
-    </AuthCard>
+      </div>
+    </main>
   );
 }
 

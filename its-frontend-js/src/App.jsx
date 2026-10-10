@@ -4,7 +4,6 @@ import { AuthContext } from './context/AuthContext';
 import { ROLES, getHomePath } from './model/User';
 import Login from './components/Login';
 import Signup from './components/Signup';
-import ProtectedRoute from './components/ProtectedRoute';
 import Dashboard from './components/Dashboard';
 
 /**
@@ -14,6 +13,20 @@ import Dashboard from './components/Dashboard';
 function App() {
   const { user } = useContext(AuthContext);
 
+  /**
+   * Shows `page` only to a logged-in user with the given role:
+   * visitors go to the login page, users with the other role go to their own dashboard.
+   */
+  function onlyFor(role, page) {
+    if (!user) {
+      return <Navigate to="/login" replace />;
+    }
+    if (user.role !== role) {
+      return <Navigate to={getHomePath(user.role)} replace />;
+    }
+    return page;
+  }
+
   return (
     <Routes>
       {/* "/" opens the user's dashboard, or the login page when nobody is logged in */}
@@ -21,14 +34,8 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
 
-      <Route
-        path="/owner/dashboard"
-        element={<ProtectedRoute role={ROLES.PROJECT_OWNER}><Dashboard /></ProtectedRoute>}
-      />
-      <Route
-        path="/assignee/dashboard"
-        element={<ProtectedRoute role={ROLES.ASSIGNEE}><Dashboard /></ProtectedRoute>}
-      />
+      <Route path="/owner/dashboard" element={onlyFor(ROLES.PROJECT_OWNER, <Dashboard />)} />
+      <Route path="/assignee/dashboard" element={onlyFor(ROLES.ASSIGNEE, <Dashboard />)} />
 
       {/* Unknown URLs go back to the start */}
       <Route path="*" element={<Navigate to="/" replace />} />

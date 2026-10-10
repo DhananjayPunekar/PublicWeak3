@@ -26,7 +26,7 @@ its-frontend-js/
 ├── package.json
 └── src/
     ├── main.jsx              router + AuthProvider, imports Bootstrap
-    ├── App.jsx               routes
+    ├── App.jsx               routes (dashboards only for the matching logged-in role)
     ├── components/           pages and UI pieces
     ├── model/                field values, role constants and validation rules
     ├── service/              API calls (fetch wrapper + one service per microservice)
