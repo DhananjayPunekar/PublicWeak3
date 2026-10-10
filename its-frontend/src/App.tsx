@@ -8,7 +8,8 @@ import { CreateProjectPage } from './pages/owner/CreateProjectPage';
 import { CreateIssuePage } from './pages/owner/CreateIssuePage';
 import { IssueDetailsPage } from './pages/owner/IssueDetailsPage';
 import { EditIssuePage } from './pages/owner/EditIssuePage';
-import { ComingSoonPage } from './pages/ComingSoonPage';
+import { AssigneeDashboardPage } from './pages/assignee/AssigneeDashboardPage';
+import { AssigneeIssueDetailsPage } from './pages/assignee/AssigneeIssueDetailsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { useAuth } from './hooks/useAuth';
 import { homePathFor, PATHS } from './routes/paths';
@@ -41,7 +42,8 @@ export function App() {
       {/* Assignee area */}
       <Route element={<ProtectedRoute role="assignee" />}>
         <Route element={<AppLayout />}>
-          <Route path={PATHS.assigneeDashboard} element={<ComingSoonPage title="Assignee Dashboard" />} />
+          <Route path={PATHS.assigneeDashboard} element={<AssigneeDashboardPage />} />
+          <Route path={PATHS.assigneeIssue(':issueId')} element={<AssigneeIssueDetailsPage />} />
         </Route>
       </Route>
 

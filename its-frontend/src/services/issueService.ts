@@ -1,6 +1,6 @@
 import { http } from './httpClient';
 import { ENDPOINTS } from './endpoints';
-import type { Issue, IssueCreatedResponse, IssueRequest, UpdateIssueRequest } from '../models/issue';
+import type { Issue, IssueCreatedResponse, IssueRequest, IssueStatus, StatusUpdateRequest, UpdateIssueRequest } from '../models/issue';
 
 /**
  * Calls to issue-service (through the API Gateway).
@@ -17,4 +17,8 @@ export const issueService = {
 
   /** PUT /api/issues/{id} - updates the given fields (Project Owner). */
   updateIssue: (issueId: number, request: UpdateIssueRequest) => http.put<Issue>(ENDPOINTS.issue(issueId), request),
+
+  /** PATCH /api/issues/{id}/status - changes only the status (Assignee). */
+  updateStatus: (issueId: number, status: IssueStatus) =>
+    http.patch<Issue>(ENDPOINTS.issueStatus(issueId), { status } satisfies StatusUpdateRequest),
 };

@@ -37,3 +37,4 @@ To use a different gateway URL, copy `.env.example` to `.env.local` and change `
 | 3 | Create Project: validated form, owner drop-down from the Users API, date range check, redirect to the new project's dashboard | ✅ |
 | 4 | Create Issue: all field validations (prime story points, numeric sprint, length limits), project and assignee drop-downs, redirect to the project board | ✅ |
 | 5 | Issue Details (Project Owner) and Edit Issue: pre-filled form with the edit validations, Reset to the loaded values | ✅ |
+| 6 | Assignee Dashboard and Assignee Issue Details: own issues as cards, RegEx search, status drop-down with "Save Updates" | ✅ |
