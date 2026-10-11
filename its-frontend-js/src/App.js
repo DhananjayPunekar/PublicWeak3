@@ -4,12 +4,13 @@ import { AuthContext } from './context/AuthContext';
 import { ROLES, getHomePath } from './model/User';
 import Login from './components/Login';
 import Signup from './components/Signup';
-import Dashboard from './components/Dashboard';
 import ProjectDashboard from './components/ProjectDashboard';
 import CreateProject from './components/CreateProject';
 import CreateIssue from './components/CreateIssue';
 import IssueDetails from './components/IssueDetails';
 import EditIssue from './components/EditIssue';
+import AssigneeDashboard from './components/AssigneeDashboard';
+import AssigneeIssueDetails from './components/AssigneeIssueDetails';
 
 /**
  * All pages of the application.
@@ -44,7 +45,8 @@ function App() {
       <Route path="/owner/issues/new" element={onlyFor(ROLES.PROJECT_OWNER, <CreateIssue />)} />
       <Route path="/owner/issues/:issueId" element={onlyFor(ROLES.PROJECT_OWNER, <IssueDetails />)} />
       <Route path="/owner/issues/:issueId/edit" element={onlyFor(ROLES.PROJECT_OWNER, <EditIssue />)} />
-      <Route path="/assignee/dashboard" element={onlyFor(ROLES.ASSIGNEE, <Dashboard />)} />
+      <Route path="/assignee/dashboard" element={onlyFor(ROLES.ASSIGNEE, <AssigneeDashboard />)} />
+      <Route path="/assignee/issues/:issueId" element={onlyFor(ROLES.ASSIGNEE, <AssigneeIssueDetails />)} />
 
       {/* Unknown URLs go back to the start */}
       <Route path="*" element={<Navigate to="/" replace />} />

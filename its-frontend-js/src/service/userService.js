@@ -59,3 +59,14 @@ export async function getUserById(userId) {
     throw new Error(error.response?.data?.message || error.message);
   }
 }
+
+/** Issues assigned to a user: GET /api/users/{userId}/issues. */
+export async function getAssignedIssues(userId) {
+  try {
+    const response = await axios.get(`${USER_API_URL}/${userId}/issues`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching the assigned issues', error);
+    throw new Error(error.response?.data?.message || error.message);
+  }
+}

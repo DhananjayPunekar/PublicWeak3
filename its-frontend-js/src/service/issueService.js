@@ -71,3 +71,16 @@ export async function updateIssue(issueId, issue) {
     throw new Error(error.response?.data?.message || error.message);
   }
 }
+
+/** Change only the status of an issue: PATCH /api/issues/{issueId}/status - returns the updated issue. */
+export async function updateIssueStatus(issueId, status) {
+  try {
+    const response = await axios.patch(`${ISSUE_API_URL}/${issueId}/status`, {
+      status: status,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating the issue status', error);
+    throw new Error(error.response?.data?.message || error.message);
+  }
+}

@@ -4,6 +4,7 @@ import { AuthContext } from '../context/AuthContext';
 import { ROLES, getInitials } from '../model/User';
 import { getProjectsByOwner } from '../service/projectService';
 import { getIssuesByOwner } from '../service/issueService';
+import { getAssignedIssues } from '../service/userService';
 
 /** Navigation links of the Project Owner. */
 const OWNER_LINKS = [
@@ -33,6 +34,11 @@ function Sidebar() {
       getIssuesByOwner(user.userId)
         .then((issues) => setIssueCount(issues.length))
         .catch(() => setIssueCount('-'));
+    } else {
+      // Assignee: number of issues assigned to them
+      getAssignedIssues(user.userId)
+        .then((issues) => setIssueCount(issues.length))
+        .catch(() => setIssueCount('-'));
     }
   }, [user]);
 
@@ -60,6 +66,12 @@ function Sidebar() {
       </div>
 
       {/* Counters */}
+      {user.role === ROLES.ASSIGNEE && (
+        <div className="border border-secondary rounded-3 text-center py-2 mb-3">
+          <div className="fs-4 fw-bold" data-testid="stat-Issues Assigned">{issueCount ?? '…'}</div>
+          <div className="small text-white-50">Issues Assigned</div>
+        </div>
+      )}
       {user.role === ROLES.PROJECT_OWNER && (
         <div className="row g-2 text-center mb-3">
           <div className="col-6">
