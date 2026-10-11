@@ -38,3 +38,36 @@ export async function createIssue(issue) {
     throw new Error(error.response?.data?.message || error.message);
   }
 }
+
+/** One issue: GET /api/issues/{issueId}. */
+export async function getIssueById(issueId) {
+  try {
+    const response = await axios.get(`${ISSUE_API_URL}/${issueId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching the issue', error);
+    throw new Error(error.response?.data?.message || error.message);
+  }
+}
+
+/** Update an issue: PUT /api/issues/{issueId} - returns the updated issue. */
+export async function updateIssue(issueId, issue) {
+  try {
+    const response = await axios.put(`${ISSUE_API_URL}/${issueId}`, {
+      summary: issue.summary,
+      type: issue.type,
+      project: issue.project,
+      description: issue.description,
+      priority: issue.priority,
+      assignee: issue.assignee,
+      tags: issue.tags,
+      sprint: issue.sprint,
+      storyPoint: issue.storyPoint,
+      status: issue.status,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating the issue', error);
+    throw new Error(error.response?.data?.message || error.message);
+  }
+}

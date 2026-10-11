@@ -135,3 +135,87 @@ export function validateIssue(form) {
     status: form.status === '' ? 'Status is required' : '',
   };
 }
+
+/** Display label of a status, e.g. "TO DO" -> "To Do". */
+export function getStatusLabel(status) {
+  const option = STATUS_COLUMNS.find((item) => item.value === status);
+  return option ? option.label : status;
+}
+
+/** Display label of an issue type, e.g. "FEATURE" -> "Story / Feature". */
+export function getTypeLabel(type) {
+  const option = ISSUE_TYPE_OPTIONS.find((item) => item.value === type);
+  return option ? option.label : type;
+}
+
+/**
+ * Splits the stored tags text into single tags.
+ * "#login, #ui" -> ["#login", "#ui"];  "#delivery #feature" -> ["#delivery", "#feature"]
+ */
+export function parseTags(tags) {
+  if (!tags || tags.trim() === '') return [];
+  const parts = tags.includes(',') ? tags.split(',') : tags.includes('#') ? tags.split(/\s+/) : [tags];
+  return parts.map((tag) => tag.trim()).filter((tag) => tag !== '');
+}
+
+/**
+ * Fills the Edit Issue form from an issue (all values as text).
+ * Older data may store the sprint as "Sprint 3"; only the number is kept.
+ */
+export function issueToForm(issue) {
+  const sprintNumber = String(issue.sprint || '').match(/\d+/);
+  return {
+    summary: issue.summary || '',
+    type: issue.type || '',
+    project: issue.project ? String(issue.project) : '',
+    description: issue.description || '',
+    priority: issue.priority || '',
+    assignee: issue.assignee ? String(issue.assignee) : '',
+    tags: issue.tags || '',
+    sprint: sprintNumber ? sprintNumber[0] : '',
+    storyPoint: issue.storyPoint === null || issue.storyPoint === undefined ? '' : String(issue.storyPoint),
+    status: issue.status || '',
+  };
+}
+
+/** Errors of the Edit Issue form ('' = valid) - rules from the Edit Issue table. */
+export function validateEditIssue(form) {
+  const summary = form.summary.trim();
+  let summaryError = '';
+  if (summary === '') summaryError = 'Summary is required';
+  else if (summary.length < 5) summaryError = 'Summary must be at least 5 characters';
+  else if (summary.length > 100) summaryError = 'Summary must be at most 100 characters';
+
+  const description = form.description.trim();
+  let descriptionError = '';
+  if (description === '') descriptionError = 'Description is required';
+  else if (description.length < 10) descriptionError = 'Description must be at least 10 characters';
+  else if (description.length > 500) descriptionError = 'Description must be at most 500 characters';
+
+  // Tags: optional; several tags are separated by commas and none may be empty
+  let tagsError = '';
+  if (form.tags.trim() !== '' && form.tags.split(',').some((tag) => tag.trim() === '')) {
+    tagsError = 'Separate tags with commas, e.g. #login, #ui (no empty tags)';
+  } else if (form.tags.trim().length > 255) {
+    tagsError = 'Tags must be at most 255 characters';
+  }
+
+  /** Required positive whole number (1, 2, 3 ...). */
+  function positiveNumberError(value, name) {
+    if (value.trim() === '') return `${name} is required`;
+    return /^[1-9]\d*$/.test(value.trim()) ? '' : `${name} must be a positive whole number`;
+  }
+
+  return {
+    summary: summaryError,
+    type: form.type === '' ? 'Type is required' : '',
+    project: form.project === '' ? 'Project is required' : '',
+    description: descriptionError,
+    priority: form.priority === '' ? 'Priority is required' : '',
+    assignee: form.assignee === '' ? 'Assignee is required' : '',
+    tags: tagsError,
+    sprint: positiveNumberError(form.sprint, 'Sprint'),
+    storyPoint: positiveNumberError(form.storyPoint, 'Story point'),
+    status: form.status === '' ? 'Status is required' : '',
+  };
+}

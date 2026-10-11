@@ -8,6 +8,8 @@ import Dashboard from './components/Dashboard';
 import ProjectDashboard from './components/ProjectDashboard';
 import CreateProject from './components/CreateProject';
 import CreateIssue from './components/CreateIssue';
+import IssueDetails from './components/IssueDetails';
+import EditIssue from './components/EditIssue';
 
 /**
  * All pages of the application.
@@ -40,6 +42,8 @@ function App() {
       <Route path="/owner/dashboard" element={onlyFor(ROLES.PROJECT_OWNER, <ProjectDashboard />)} />
       <Route path="/owner/projects/new" element={onlyFor(ROLES.PROJECT_OWNER, <CreateProject />)} />
       <Route path="/owner/issues/new" element={onlyFor(ROLES.PROJECT_OWNER, <CreateIssue />)} />
+      <Route path="/owner/issues/:issueId" element={onlyFor(ROLES.PROJECT_OWNER, <IssueDetails />)} />
+      <Route path="/owner/issues/:issueId/edit" element={onlyFor(ROLES.PROJECT_OWNER, <EditIssue />)} />
       <Route path="/assignee/dashboard" element={onlyFor(ROLES.ASSIGNEE, <Dashboard />)} />
 
       {/* Unknown URLs go back to the start */}
