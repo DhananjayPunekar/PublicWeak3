@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import IssueBoard from './IssueBoard';
@@ -16,6 +16,8 @@ import { getAllUsers } from '../service/userService';
  */
 function ProjectDashboard() {
   const { user } = useContext(AuthContext);
+  // After Create Project: { projectId, message } of the project just created
+  const createdProject = useLocation().state;
 
   // Projects owned by the logged-in user (null while loading)
   const [projects, setProjects] = useState(null);
@@ -38,8 +40,11 @@ function ProjectDashboard() {
     getProjectsByOwner(user.userId)
       .then((ownedProjects) => {
         setProjects(ownedProjects);
-        // The first project from the API is selected by default
-        if (ownedProjects.length > 0) {
+        // The project just created is selected; otherwise the first project from the API
+        const justCreated = ownedProjects.find((project) => project.id === createdProject?.projectId);
+        if (justCreated) {
+          setSelectedProjectId(String(justCreated.id));
+        } else if (ownedProjects.length > 0) {
           setSelectedProjectId(String(ownedProjects[0].id));
         }
       })
@@ -51,7 +56,7 @@ function ProjectDashboard() {
     getAllUsers()
       .then(setUsers)
       .catch(() => setUsers([]));
-  }, [user]);
+  }, [user, createdProject]);
 
   // 2. Load the issues whenever another project is selected
   useEffect(() => {
@@ -107,6 +112,7 @@ function ProjectDashboard() {
     return (
       <>
         <h1 className="h5 fw-bold text-uppercase mb-3">Project Dashboard</h1>
+        {createdProject?.message && <div className="alert alert-success py-2" role="alert">{createdProject.message}</div>}
 
         {/* Project details and filters */}
         <div className="card border-0 shadow-sm mb-4">

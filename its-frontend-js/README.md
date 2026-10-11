@@ -53,7 +53,7 @@ React hooks used: `useState`, `useEffect`, `useRef`, `useContext`, `useNavigate`
 |---|---|---|
 | 1 | Login (React **controlled** form) and Signup (React **uncontrolled** form) | ✅ |
 | 2 | Project Owner Dashboard | ✅ |
-| 3 | Create Project | ⏳ |
+| 3 | Create Project | ✅ |
 | 4 | Create Issue | ⏳ |
 | 5 | Issue Details | ⏳ |
 | 6 | Assignee Dashboard | ⏳ |
@@ -93,4 +93,20 @@ Search (RegEx on summary/description), assignee filter and priority filter all r
 - *Issues Created* counts the issues of every project the owner owns.
 - The assignee filter lists the team members of the selected project, i.e. everyone assigned to one of its issues.
 - Invalid RegEx text in the search bar (e.g. `(`) is searched as plain text.
-- Create Project and Create Issue links lead back to the dashboard until Milestones 3 and 4.
+- The Create Issue link leads back to the dashboard until Milestone 4.
+
+## Milestone 3 – Create Project (`/owner/projects/new`)
+
+Component: `components/CreateProject.js` – a React **controlled** form, with the sidebar and header.
+
+| Field | Validation |
+|---|---|
+| Project Name | required, max 150 characters, no special characters except `- / \| .` |
+| Project Owner | required drop-down of users with the Project Owner role (`GET /api/users`); the logged-in owner is preselected |
+| Project Start Date | required date picker |
+| Project End Date | required date picker, not earlier than the start date |
+
+- **Create** is enabled only when the form is valid and disabled while `POST /api/projects` runs.
+  On success the user goes to the Project Dashboard with the new project selected and a success message; on failure the server's message is shown (e.g. *A project named 'X' already exists*).
+- **Reset** sets all fields to blank.
+- Validation rules live in `model/Project.js` (`validateProject`), the API call in `service/projectService.js` (`createProject`).
