@@ -56,7 +56,7 @@ React hooks used: `useState`, `useEffect`, `useRef`, `useContext`, `useNavigate`
 | 3 | Create Project | ✅ |
 | 4 | Create Issue | ✅ |
 | 5 | Issue Details | ✅ |
-| 6 | Assignee Dashboard | ⏳ |
+| 6 | Assignee Dashboard | ✅ |
 | 7 | Back-end API integration | ⏳ |
 | 8 | Push to GitHub | ⏳ |
 
@@ -68,7 +68,7 @@ React hooks used: `useState`, `useEffect`, `useRef`, `useContext`, `useNavigate`
 | Signup `/signup` | `components/Signup.js` | **Uncontrolled** – no `value` props; values read from the DOM with `useRef` | Name required, not blank, letters only; email format; strong password (8+ chars, upper, lower, digit, special); profile image http(s) URL ending in an image extension; role required |
 
 - Messages appear once the user interacts with a field; the submit button stays disabled while the form is invalid or the request is running.
-- Login calls `POST /api/users/login` and opens `/owner/dashboard` or `/assignee/dashboard` by role (a simple welcome page until Milestones 2 and 6).
+- Login calls `POST /api/users/login` and opens `/owner/dashboard` or `/assignee/dashboard` by role.
 - Signup calls `POST /api/users` and shows *"Your account is created successfully"* with a link to the login page (email pre-filled).
 - Server errors (wrong password, duplicate email, service down) are shown above the form.
 
@@ -171,3 +171,21 @@ A React **controlled** form, filled with the issue's current values.
 ### Assumptions (Milestone 5)
 - Older issues store the sprint as text such as "Sprint 3"; the edit form shows only the number (3) and saves it as "3".
 - The assignee drop-down lists users with the Assignee role, plus the issue's current assignee if they have another role.
+
+## Milestone 6 – Assignee Dashboard and Assignee Issue Details
+
+### Assignee Dashboard (`/assignee/dashboard`) – `components/AssigneeDashboard.js`
+| Component | Implementation |
+|---|---|
+| Header | search bar on the left, application name on the right |
+| Search bar | filters issues whose summary or description matches the text as a RegEx (in the browser) |
+| Side bar | profile image, name, email, number of issues assigned, Logout |
+| Issue display | cards in To Do / Development / Testing / Completed with ID, title, description, created date, priority, assignee name and photo – from `GET /api/users/{userId}/issues` |
+
+### Assignee Issue Details (`/assignee/issues/:issueId`) – `components/AssigneeIssueDetails.js`
+- Opens when an issue card is clicked; breadcrumb *Issue Dashboard / Issue Details*.
+- Shows title, description, type, tags, story points, sprint, priority, status, created on and last updated.
+- A status drop-down; **Save Updates** becomes enabled only when the status is changed and saves it with `PATCH /api/issues/{id}/status`.
+- Issues not assigned to the logged-in user are read-only.
+
+API calls: `getAssignedIssues` in `service/userService.js`, `updateIssueStatus` in `service/issueService.js`.
