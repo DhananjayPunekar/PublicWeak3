@@ -1,7 +1,7 @@
 /**
  * Small wrapper around fetch used by every service.
- * All requests go to relative URLs (/api/...), which the Vite dev server
- * forwards to the API Gateway (see vite.config.js).
+ * All requests go to relative URLs (/api/...), which the development server
+ * forwards to the API Gateway ("proxy" in package.json).
  */
 
 /** Builds a readable message from a failed response. */

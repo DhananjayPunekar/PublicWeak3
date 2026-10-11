@@ -1,32 +1,35 @@
 # ITS Front End – React (JavaScript) + Bootstrap
 
-Week 4 front end for the Issue Tracking System, built **milestone by milestone** in plain JavaScript with Bootstrap classes (no custom CSS files).
+Week 4 front end for the Issue Tracking System, built **milestone by milestone** in plain JavaScript (Create React App) with Bootstrap classes (no custom CSS files).
 It calls the Week 2 Spring Boot back end through the API Gateway on `http://localhost:8080`.
 
 ## Run it
+
+This is a **Create React App** project.
 
 1. Start the back end (see the root [README](../README.md)): MySQL → `eureka-server` → `user-service`, `project-service`, `issue-service` → `api-gateway`.
 2. In this folder:
 
    ```bash
    npm install
-   npm run dev
+   npm start
    ```
 
 3. Open **http://localhost:3000**. Sample logins: `alice.smith@example.com` / `abc123` (Project Owner), `bob.johnson@example.com` / `def456` (Assignee).
 
-The dev server forwards every `/api` call to the gateway, so the back end needs no CORS setup.
+`"proxy": "http://localhost:8080"` in `package.json` forwards every `/api` call to the API Gateway, so the back end needs no CORS setup.
+After changing `package.json`, stop the server (Ctrl+C) and run `npm start` again.
 
 ## Folder structure
 
 ```
 its-frontend-js/
-├── index.html
-├── vite.config.js            dev server on port 3000, /api proxy to the gateway
-├── package.json
+├── package.json              dependencies, scripts, "proxy" to the gateway
+├── public/
+│   └── index.html            page with <div id="root"> (required by Create React App)
 └── src/
-    ├── main.jsx              router + AuthProvider, imports Bootstrap
-    ├── App.jsx               routes (dashboards only for the matching logged-in role)
+    ├── index.js              entry point: router + AuthProvider, imports Bootstrap
+    ├── App.js                routes (dashboards only for the matching logged-in role)
     ├── components/           pages and UI pieces
     ├── model/                field values, role constants and validation rules
     ├── service/              API calls (fetch wrapper + one service per microservice)
@@ -53,8 +56,8 @@ React hooks used: `useState`, `useEffect`, `useRef`, `useContext`, `useNavigate`
 
 | Screen | Component | Form type | Validation |
 |---|---|---|---|
-| Login `/login` | `components/Login.jsx` | **Controlled** – values in `useState`, inputs use `value` + `onChange` | Email required + format; password required, 6–100 chars, no spaces; role required; the chosen role must match the account |
-| Signup `/signup` | `components/Signup.jsx` | **Uncontrolled** – no `value` props; values read from the DOM with `useRef` | Name required, not blank, letters only; email format; strong password (8+ chars, upper, lower, digit, special); profile image http(s) URL ending in an image extension; role required |
+| Login `/login` | `components/Login.js` | **Controlled** – values in `useState`, inputs use `value` + `onChange` | Email required + format; password required, 6–100 chars, no spaces; role required; the chosen role must match the account |
+| Signup `/signup` | `components/Signup.js` | **Uncontrolled** – no `value` props; values read from the DOM with `useRef` | Name required, not blank, letters only; email format; strong password (8+ chars, upper, lower, digit, special); profile image http(s) URL ending in an image extension; role required |
 
 - Messages appear once the user interacts with a field; the submit button stays disabled while the form is invalid or the request is running.
 - Login calls `POST /api/users/login` and opens `/owner/dashboard` or `/assignee/dashboard` by role (a simple welcome page until Milestones 2 and 6).
@@ -70,10 +73,10 @@ React hooks used: `useState`, `useEffect`, `useRef`, `useContext`, `useNavigate`
 
 | Part | Component | What it does |
 |---|---|---|
-| Sidebar | `components/Sidebar.jsx` | Profile image (initials if none), name, email, *Projects Created* and *Issues Created* counters, links to Project Dashboard / Create Project / Create Issue, Logout |
-| Header | `components/Header.jsx` | Search bar on the left, application name on the right |
-| Dashboard | `components/ProjectDashboard.jsx` | Project drop-down (first project selected by default), project owner name, start/end date as dd-mm-yyyy, filters by assignee and priority, "No Projects Available!" with a Create Project link |
-| Issue board | `components/IssueBoard.jsx` | Cards in To Do / Development / Testing / Completed with ID, creation date, title, description, assignee photo + name and priority |
+| Sidebar | `components/Sidebar.js` | Profile image (initials if none), name, email, *Projects Created* and *Issues Created* counters, links to Project Dashboard / Create Project / Create Issue, Logout |
+| Header | `components/Header.js` | Search bar on the left, application name on the right |
+| Dashboard | `components/ProjectDashboard.js` | Project drop-down (first project selected by default), project owner name, start/end date as dd-mm-yyyy, filters by assignee and priority, "No Projects Available!" with a Create Project link |
+| Issue board | `components/IssueBoard.js` | Cards in To Do / Development / Testing / Completed with ID, creation date, title, description, assignee photo + name and priority |
 
 APIs: `GET /api/projects/owner/{ownerId}`, `GET /api/projects/{projectId}/issues`, `GET /api/issues/owner/{ownerId}`, `GET /api/users`.
 Search (RegEx on summary/description), assignee filter and priority filter all run in the browser (`filterIssues` in `model/Issue.js`).
