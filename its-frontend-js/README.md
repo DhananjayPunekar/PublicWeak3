@@ -1,13 +1,22 @@
 # ITS Front End – React (JavaScript) + Bootstrap
 
 Week 4 front end for the Issue Tracking System, built **milestone by milestone** in plain JavaScript (Create React App) with Bootstrap classes (no custom CSS files).
-It calls the Week 2 Spring Boot back end through the API Gateway on `http://localhost:8080`.
+It calls the Week 2 Spring Boot microservices directly (user-service 8081, project-service 8082, issue-service 8083).
 
 ## Run it
 
-This is a **Create React App** project.
+This is a **Create React App** project. The front end calls the three microservices **directly** (no API Gateway):
 
-1. Start the back end (see the root [README](../README.md)): MySQL → `eureka-server` → `user-service`, `project-service`, `issue-service` → `api-gateway`.
+| Service | URL used by the front end |
+|---|---|
+| user-service | `http://localhost:8081/api/users` |
+| project-service | `http://localhost:8082/api/projects` |
+| issue-service | `http://localhost:8083/api/issues` |
+
+If your services run on other ports, change the URL constant at the top of the matching file in `src/service/`.
+Each service allows the React app's origin `http://localhost:3000` through its `config/CorsConfig.java`.
+
+1. Start the back end (see the root [README](../README.md)): MySQL → `eureka-server` → `user-service`, `project-service`, `issue-service`.
 2. In this folder:
 
    ```bash
@@ -17,14 +26,11 @@ This is a **Create React App** project.
 
 3. Open **http://localhost:3000**. Sample logins: `alice.smith@example.com` / `abc123` (Project Owner), `bob.johnson@example.com` / `def456` (Assignee).
 
-`"proxy": "http://localhost:8080"` in `package.json` forwards every `/api` call to the API Gateway, so the back end needs no CORS setup.
-After changing `package.json`, stop the server (Ctrl+C) and run `npm start` again.
-
 ## Folder structure
 
 ```
 its-frontend-js/
-├── package.json              dependencies, scripts, "proxy" to the gateway
+├── package.json              dependencies and scripts
 ├── public/
 │   └── index.html            page with <div id="root"> (required by Create React App)
 └── src/
@@ -32,11 +38,11 @@ its-frontend-js/
     ├── App.js                routes (dashboards only for the matching logged-in role)
     ├── components/           pages and UI pieces
     ├── model/                field values, role constants and validation rules
-    ├── service/              API calls with axios: userService, projectService, issueService (+ apiService error helper)
+    ├── service/              API calls with axios: userService, projectService, issueService
     └── context/              logged-in user (AuthContext)
 ```
 
-API calls use **axios**. Each service file exports one `async` function per endpoint (e.g. `loginUser`, `registerUser`, `getProjectsByOwner`) that returns `response.data` and, on failure, throws an `Error` with the server's message (`getErrorMessage` in `service/apiService.js`). URLs are relative (`/api/...`); the `"proxy"` in `package.json` sends them to the API Gateway.
+API calls use **axios**. Each service file exports one `async` function per endpoint (e.g. `loginUser`, `registerUser`, `getProjectsByOwner`) that returns `response.data` and, on failure, throws an `Error` with the server's message (`error.response.data.message`).
 
 Styling uses Bootstrap classes only; the few values Bootstrap has no class for (e.g. the card's max width) are inline `style` attributes.
 React hooks used: `useState`, `useEffect`, `useRef`, `useContext`, `useNavigate`, `useLocation`.
@@ -64,7 +70,7 @@ React hooks used: `useState`, `useEffect`, `useRef`, `useContext`, `useNavigate`
 - Messages appear once the user interacts with a field; the submit button stays disabled while the form is invalid or the request is running.
 - Login calls `POST /api/users/login` and opens `/owner/dashboard` or `/assignee/dashboard` by role (a simple welcome page until Milestones 2 and 6).
 - Signup calls `POST /api/users` and shows *"Your account is created successfully"* with a link to the login page (email pre-filled).
-- Server errors (wrong password, duplicate email, gateway down) are shown above the form.
+- Server errors (wrong password, duplicate email, service down) are shown above the form.
 
 ### Assumptions (Milestone 1)
 - The back end logs in with email + password only; the role on the login form is checked against the account's role.

@@ -1,8 +1,7 @@
 import axios from 'axios';
-import { getErrorMessage } from './apiService';
 
-// user-service through the API Gateway ("proxy" in package.json adds host and port)
-const USER_API_URL = '/api/users';
+// user-service, called directly (the service must allow CORS for http://localhost:3000)
+const USER_API_URL = 'http://localhost:8081/api/users';
 
 /** Login: POST /api/users/login - returns { message, dashboard, user }. */
 export async function loginUser(email, password) {
@@ -14,7 +13,8 @@ export async function loginUser(email, password) {
     return response.data;
   } catch (error) {
     console.error('Error logging in the user', error);
-    throw new Error(getErrorMessage(error));
+    // Show the server's message (e.g. "Invalid email or password") when there is one
+    throw new Error(error.response?.data?.message || error.message);
   }
 }
 
@@ -31,7 +31,8 @@ export async function registerUser(user) {
     return response.data;
   } catch (error) {
     console.error('Error registering the user', error);
-    throw new Error(getErrorMessage(error));
+    // Show the server's message (e.g. "Invalid email or password") when there is one
+    throw new Error(error.response?.data?.message || error.message);
   }
 }
 
@@ -42,7 +43,8 @@ export async function getAllUsers() {
     return response.data;
   } catch (error) {
     console.error('Error fetching users', error);
-    throw new Error(getErrorMessage(error));
+    // Show the server's message (e.g. "Invalid email or password") when there is one
+    throw new Error(error.response?.data?.message || error.message);
   }
 }
 
@@ -53,6 +55,7 @@ export async function getUserById(userId) {
     return response.data;
   } catch (error) {
     console.error('Error fetching the user', error);
-    throw new Error(getErrorMessage(error));
+    // Show the server's message (e.g. "Invalid email or password") when there is one
+    throw new Error(error.response?.data?.message || error.message);
   }
 }

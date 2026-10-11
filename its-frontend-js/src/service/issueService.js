@@ -1,8 +1,7 @@
 import axios from 'axios';
-import { getErrorMessage } from './apiService';
 
-// issue-service through the API Gateway ("proxy" in package.json adds host and port)
-const ISSUE_API_URL = '/api/issues';
+// issue-service, called directly (the service must allow CORS for http://localhost:3000)
+const ISSUE_API_URL = 'http://localhost:8083/api/issues';
 
 /** Issues of every project a user owns: GET /api/issues/owner/{ownerId}. */
 export async function getIssuesByOwner(ownerId) {
@@ -11,6 +10,7 @@ export async function getIssuesByOwner(ownerId) {
     return response.data;
   } catch (error) {
     console.error('Error fetching the issues', error);
-    throw new Error(getErrorMessage(error));
+    // Show the server's message (e.g. "Invalid email or password") when there is one
+    throw new Error(error.response?.data?.message || error.message);
   }
 }
