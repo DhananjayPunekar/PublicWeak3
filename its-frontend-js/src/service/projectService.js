@@ -26,3 +26,20 @@ export async function getProjectIssues(projectId) {
     throw new Error(error.response?.data?.message || error.message);
   }
 }
+
+/** Create a project: POST /api/projects - returns { message, projectId, project }. */
+export async function createProject(project) {
+  try {
+    const response = await axios.post(PROJECT_API_URL, {
+      projectName: project.projectName,
+      productOwner: project.productOwner,
+      startDate: project.startDate,
+      endDate: project.endDate,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating the project', error);
+    // Show the server's message (e.g. "A project named 'X' already exists") when there is one
+    throw new Error(error.response?.data?.message || error.message);
+  }
+}

@@ -6,6 +6,7 @@ import Login from './components/Login';
 import Signup from './components/Signup';
 import Dashboard from './components/Dashboard';
 import ProjectDashboard from './components/ProjectDashboard';
+import CreateProject from './components/CreateProject';
 
 /**
  * All pages of the application.
@@ -36,6 +37,7 @@ function App() {
       <Route path="/signup" element={<Signup />} />
 
       <Route path="/owner/dashboard" element={onlyFor(ROLES.PROJECT_OWNER, <ProjectDashboard />)} />
+      <Route path="/owner/projects/new" element={onlyFor(ROLES.PROJECT_OWNER, <CreateProject />)} />
       <Route path="/assignee/dashboard" element={onlyFor(ROLES.ASSIGNEE, <Dashboard />)} />
 
       {/* Unknown URLs go back to the start */}
