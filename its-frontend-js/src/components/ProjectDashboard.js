@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import IssueBoard from './IssueBoard';
@@ -16,6 +16,7 @@ import { getAllUsers } from '../service/userService';
  */
 function ProjectDashboard() {
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
   // After Create Project / Create Issue: { projectId, message } - project to select and success message
   const createdProject = useLocation().state;
 
@@ -167,7 +168,7 @@ function ProjectDashboard() {
             <span className="spinner-border spinner-border-sm me-2"></span>Loading issues...
           </div>
         ) : (
-          <IssueBoard issues={visibleIssues} users={users} />
+          <IssueBoard issues={visibleIssues} users={users} onOpen={(issue) => navigate(`/owner/issues/${issue.id}`)} />
         )}
       </>
     );

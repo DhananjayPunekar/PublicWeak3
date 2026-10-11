@@ -45,7 +45,7 @@ its-frontend-js/
 API calls use **axios**. Each service file exports one `async` function per endpoint (e.g. `loginUser`, `registerUser`, `getProjectsByOwner`) that returns `response.data` and, on failure, throws an `Error` with the server's message (`error.response.data.message`).
 
 Styling uses Bootstrap classes only; the few values Bootstrap has no class for (e.g. the card's max width) are inline `style` attributes.
-React hooks used: `useState`, `useEffect`, `useRef`, `useContext`, `useNavigate`, `useLocation`.
+React hooks used: `useState`, `useEffect`, `useRef`, `useContext`, `useNavigate`, `useLocation`, `useParams`.
 
 ## Milestones
 
@@ -55,7 +55,7 @@ React hooks used: `useState`, `useEffect`, `useRef`, `useContext`, `useNavigate`
 | 2 | Project Owner Dashboard | ✅ |
 | 3 | Create Project | ✅ |
 | 4 | Create Issue | ✅ |
-| 5 | Issue Details | ⏳ |
+| 5 | Issue Details | ✅ |
 | 6 | Assignee Dashboard | ⏳ |
 | 7 | Back-end API integration | ⏳ |
 | 8 | Push to GitHub | ⏳ |
@@ -137,3 +137,37 @@ Component: `components/CreateIssue.js` – a React **controlled** form, with the
 - The back end requires a description, so an empty one is saved as *"No description provided."*.
 - Sprint and Story Point are optional (not marked required); when filled they must follow the rules above.
 - The logged-in owner is sent as `createdBy`.
+
+## Milestone 5 – Issue Details and Edit Issue (Project Owner)
+
+Clicking an issue card on the Project Dashboard opens its details.
+
+### Issue Detail (`/owner/issues/:issueId`) – `components/IssueDetails.js`
+- Breadcrumb *Project Board / Issue Details* (back to the board of this issue's project).
+- Title, description, type, tags (badges), story points, sprint, priority.
+- Side panel: **Edit Issue** button, status, assignee (photo + name), created on, last updated (dd-mm-yyyy).
+- The Edit Issue button is shown only for issues of projects the logged-in owner owns.
+
+### Edit Issue (`/owner/issues/:issueId/edit`) – `components/EditIssue.js`
+A React **controlled** form, filled with the issue's current values.
+
+| Field | Validation |
+|---|---|
+| Summary | required, 5–100 characters |
+| Project | required, from the owner's projects |
+| Type | required: Bug, Task, Story / Feature |
+| Priority | required: Low, Medium, High |
+| Description | required, 10–500 characters |
+| Assignee | required, from the users list |
+| Sprint | required, positive whole number |
+| Status | required: To Do, Development, Testing, Completed |
+| Tags | optional, several tags separated by commas |
+| Story Point | required, positive whole number |
+
+- **Edit** is enabled only when all required fields are valid; it calls `PUT /api/issues/{id}` and returns to the details with a success message.
+- **Reset** puts the form back to the values loaded from the server.
+- Rules live in `model/Issue.js` (`validateEditIssue`, `issueToForm`), API calls in `service/issueService.js` (`getIssueById`, `updateIssue`) and `service/projectService.js` (`getProjectById`).
+
+### Assumptions (Milestone 5)
+- Older issues store the sprint as text such as "Sprint 3"; the edit form shows only the number (3) and saves it as "3".
+- The assignee drop-down lists users with the Assignee role, plus the issue's current assignee if they have another role.

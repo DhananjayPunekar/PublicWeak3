@@ -5,9 +5,10 @@ import { getInitials } from '../model/User';
 /**
  * Issues as cards in four columns: To Do, Development, Testing, Completed.
  * Each card shows ID, creation date, title, description, assignee (photo + name) and priority.
- * Props: issues (already filtered), users (to find assignee names and photos)
+ * Props: issues (already filtered), users (to find assignee names and photos),
+ *        onOpen(issue) - called when a card is clicked
  */
-function IssueBoard({ issues, users }) {
+function IssueBoard({ issues, users, onOpen }) {
   /** The assignee of an issue, or a stand-in when the user is unknown. */
   function findAssignee(userId) {
     return users.find((user) => user.userId === userId) || { name: `User #${userId}`, profileImage: null };
@@ -34,7 +35,10 @@ function IssueBoard({ issues, users }) {
                 {columnIssues.map((issue) => {
                   const assignee = findAssignee(issue.assignee);
                   return (
-                    <div key={issue.id} data-testid="issue-card" className={`card border-0 border-start border-4 border-${column.color} shadow-sm`}>
+                    <div key={issue.id} data-testid="issue-card" role="button" tabIndex={0}
+                      className={`card border-0 border-start border-4 border-${column.color} shadow-sm`}
+                      onClick={() => onOpen(issue)}
+                      onKeyDown={(event) => event.key === 'Enter' && onOpen(issue)}>
                       <div className="card-body p-3">
                         <div className="d-flex justify-content-between small text-secondary mb-1">
                           <span className="fw-semibold">#{issue.id}</span>

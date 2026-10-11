@@ -43,3 +43,14 @@ export async function createProject(project) {
     throw new Error(error.response?.data?.message || error.message);
   }
 }
+
+/** One project: GET /api/projects/{projectId}. */
+export async function getProjectById(projectId) {
+  try {
+    const response = await axios.get(`${PROJECT_API_URL}/${projectId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching the project', error);
+    throw new Error(error.response?.data?.message || error.message);
+  }
+}
