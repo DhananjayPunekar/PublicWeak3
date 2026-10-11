@@ -54,7 +54,7 @@ React hooks used: `useState`, `useEffect`, `useRef`, `useContext`, `useNavigate`
 | 1 | Login (React **controlled** form) and Signup (React **uncontrolled** form) | ✅ |
 | 2 | Project Owner Dashboard | ✅ |
 | 3 | Create Project | ✅ |
-| 4 | Create Issue | ⏳ |
+| 4 | Create Issue | ✅ |
 | 5 | Issue Details | ⏳ |
 | 6 | Assignee Dashboard | ⏳ |
 | 7 | Back-end API integration | ⏳ |
@@ -93,7 +93,6 @@ Search (RegEx on summary/description), assignee filter and priority filter all r
 - *Issues Created* counts the issues of every project the owner owns.
 - The assignee filter lists the team members of the selected project, i.e. everyone assigned to one of its issues.
 - Invalid RegEx text in the search bar (e.g. `(`) is searched as plain text.
-- The Create Issue link leads back to the dashboard until Milestone 4.
 
 ## Milestone 3 – Create Project (`/owner/projects/new`)
 
@@ -110,3 +109,31 @@ Component: `components/CreateProject.js` – a React **controlled** form, with t
   On success the user goes to the Project Dashboard with the new project selected and a success message; on failure the server's message is shown (e.g. *A project named 'X' already exists*).
 - **Reset** sets all fields to blank.
 - Validation rules live in `model/Project.js` (`validateProject`), the API call in `service/projectService.js` (`createProject`).
+
+## Milestone 4 – Create Issue (`/owner/issues/new`)
+
+Component: `components/CreateIssue.js` – a React **controlled** form, with the sidebar and header.
+
+| Field | Validation |
+|---|---|
+| Summary | required, max 150 characters, no special characters except `- / \| .` |
+| Type | required drop-down: Bug, Task, Story / Feature |
+| Project | required drop-down of the owner's projects (`GET /api/projects/owner/{ownerId}`) |
+| Description | optional, max 500 characters |
+| Priority | required drop-down: Low, Medium, High |
+| Assignee | required drop-down of users with the Assignee role (`GET /api/users`) |
+| Tags | text, max 100 characters |
+| Sprint | numbers only: 1, 2, 3 ... |
+| Story Point | numbers only, and only prime numbers (2, 3, 5, 7, 11, 13 ...) |
+| Status | required drop-down, starts at To Do |
+
+- **Create** is enabled only when the form is valid and disabled while `POST /api/issues` runs.
+  On success the user goes to the project board of the issue's project with a success message; on failure the server's message is shown.
+- **Reset** sets all fields to blank.
+- Validation rules live in `model/Issue.js` (`validateIssue`, `isPrime`), the API call in `service/issueService.js` (`createIssue`).
+
+### Assumptions (Milestone 4)
+- The requirements map type 3 to STORY; the back end calls it FEATURE, so the option reads *Story / Feature* and sends `FEATURE`.
+- The back end requires a description, so an empty one is saved as *"No description provided."*.
+- Sprint and Story Point are optional (not marked required); when filled they must follow the rules above.
+- The logged-in owner is sent as `createdBy`.
