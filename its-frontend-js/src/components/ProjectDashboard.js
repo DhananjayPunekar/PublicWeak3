@@ -16,7 +16,7 @@ import { getAllUsers } from '../service/userService';
  */
 function ProjectDashboard() {
   const { user } = useContext(AuthContext);
-  // After Create Project: { projectId, message } of the project just created
+  // After Create Project / Create Issue: { projectId, message } - project to select and success message
   const createdProject = useLocation().state;
 
   // Projects owned by the logged-in user (null while loading)
@@ -40,7 +40,7 @@ function ProjectDashboard() {
     getProjectsByOwner(user.userId)
       .then((ownedProjects) => {
         setProjects(ownedProjects);
-        // The project just created is selected; otherwise the first project from the API
+        // The project from Create Project / Create Issue is selected; otherwise the first project from the API
         const justCreated = ownedProjects.find((project) => project.id === createdProject?.projectId);
         if (justCreated) {
           setSelectedProjectId(String(justCreated.id));

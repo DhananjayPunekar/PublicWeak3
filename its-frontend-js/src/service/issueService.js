@@ -14,3 +14,27 @@ export async function getIssuesByOwner(ownerId) {
     throw new Error(error.response?.data?.message || error.message);
   }
 }
+
+/** Create an issue: POST /api/issues - returns { message, issueId, issue }. */
+export async function createIssue(issue) {
+  try {
+    const response = await axios.post(ISSUE_API_URL, {
+      summary: issue.summary,
+      type: issue.type,
+      project: issue.project,
+      description: issue.description,
+      priority: issue.priority,
+      assignee: issue.assignee,
+      createdBy: issue.createdBy,
+      tags: issue.tags,
+      sprint: issue.sprint,
+      storyPoint: issue.storyPoint,
+      status: issue.status,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating the issue', error);
+    // Show the server's message when there is one
+    throw new Error(error.response?.data?.message || error.message);
+  }
+}
