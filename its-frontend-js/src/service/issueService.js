@@ -1,14 +1,16 @@
-import apiService from './apiService';
+import axios from 'axios';
+import { getErrorMessage } from './apiService';
 
-/** Base URL of issue-service (through the API Gateway). */
-const ISSUES_URL = '/api/issues';
+// issue-service through the API Gateway ("proxy" in package.json adds host and port)
+const ISSUE_API_URL = '/api/issues';
 
-/**
- * Calls to issue-service.
- */
-const issueService = {
-  /** GET /api/issues/owner/{ownerId} - issues of every project the user owns. */
-  getIssuesByOwner: (ownerId) => apiService.get(`${ISSUES_URL}/owner/${ownerId}`),
-};
-
-export default issueService;
+/** Issues of every project a user owns: GET /api/issues/owner/{ownerId}. */
+export async function getIssuesByOwner(ownerId) {
+  try {
+    const response = await axios.get(`${ISSUE_API_URL}/owner/${ownerId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching the issues', error);
+    throw new Error(getErrorMessage(error));
+  }
+}
