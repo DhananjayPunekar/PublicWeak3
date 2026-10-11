@@ -1,7 +1,7 @@
 import { useContext, useRef, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import userService from '../service/userService';
+import { registerUser } from '../service/userService';
 import { ROLE_OPTIONS, SIGNUP_FIELDS, getHomePath, isValid, validateSignupField } from '../model/User';
 
 /** Errors of an empty form: every field starts invalid, so Signup starts disabled. */
@@ -91,7 +91,7 @@ function Signup() {
     setLoading(true);
     setServerError('');
     try {
-      const response = await userService.signup({
+      const response = await registerUser({
         name: values.name.trim(),
         email: values.email.trim(),
         password: values.password,

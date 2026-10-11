@@ -1,23 +1,58 @@
-import apiService from './apiService';
+import axios from 'axios';
+import { getErrorMessage } from './apiService';
 
-/** Base URL of user-service (through the API Gateway). */
-const USERS_URL = '/api/users';
+// user-service through the API Gateway ("proxy" in package.json adds host and port)
+const USER_API_URL = '/api/users';
 
-/**
- * Calls to user-service.
- */
-const userService = {
-  /** POST /api/users/login - returns { message, dashboard, user }. */
-  login: (email, password) => apiService.post(`${USERS_URL}/login`, { email, password }),
+/** Login: POST /api/users/login - returns { message, dashboard, user }. */
+export async function loginUser(email, password) {
+  try {
+    const response = await axios.post(`${USER_API_URL}/login`, {
+      email: email,
+      password: password,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error logging in the user', error);
+    throw new Error(getErrorMessage(error));
+  }
+}
 
-  /** POST /api/users - creates an account; returns { message, loginUrl, user }. */
-  signup: (newUser) => apiService.post(USERS_URL, newUser),
+/** Signup: POST /api/users - returns { message, loginUrl, user }. */
+export async function registerUser(user) {
+  try {
+    const response = await axios.post(USER_API_URL, {
+      name: user.name,
+      email: user.email,
+      password: user.password,
+      profileImage: user.profileImage,
+      role: user.role,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error registering the user', error);
+    throw new Error(getErrorMessage(error));
+  }
+}
 
-  /** GET /api/users - every user. */
-  getAllUsers: () => apiService.get(USERS_URL),
+/** All users: GET /api/users. */
+export async function getAllUsers() {
+  try {
+    const response = await axios.get(USER_API_URL);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching users', error);
+    throw new Error(getErrorMessage(error));
+  }
+}
 
-  /** GET /api/users/{userId} - one user. */
-  getUserById: (userId) => apiService.get(`${USERS_URL}/${userId}`),
-};
-
-export default userService;
+/** One user: GET /api/users/{userId}. */
+export async function getUserById(userId) {
+  try {
+    const response = await axios.get(`${USER_API_URL}/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching the user', error);
+    throw new Error(getErrorMessage(error));
+  }
+}

@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import userService from '../service/userService';
+import { loginUser } from '../service/userService';
 import { EMPTY_LOGIN, ROLE_OPTIONS, getHomePath, getRoleLabel, isValid, validateLogin } from '../model/User';
 
 /**
@@ -52,7 +52,7 @@ function Login() {
     setLoading(true);
     setServerError('');
     try {
-      const response = await userService.login(form.email.trim(), form.password);
+      const response = await loginUser(form.email.trim(), form.password);
       // The account's role must match the role selected on the form
       if (response.user.role !== form.role) {
         setServerError(`This account is registered as ${getRoleLabel(response.user.role)}. Please select the correct role.`);

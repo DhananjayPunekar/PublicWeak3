@@ -32,9 +32,11 @@ its-frontend-js/
     ├── App.js                routes (dashboards only for the matching logged-in role)
     ├── components/           pages and UI pieces
     ├── model/                field values, role constants and validation rules
-    ├── service/              API calls (fetch wrapper + one service per microservice)
+    ├── service/              API calls with axios: userService, projectService, issueService (+ apiService error helper)
     └── context/              logged-in user (AuthContext)
 ```
+
+API calls use **axios**. Each service file exports one `async` function per endpoint (e.g. `loginUser`, `registerUser`, `getProjectsByOwner`) that returns `response.data` and, on failure, throws an `Error` with the server's message (`getErrorMessage` in `service/apiService.js`). URLs are relative (`/api/...`); the `"proxy"` in `package.json` sends them to the API Gateway.
 
 Styling uses Bootstrap classes only; the few values Bootstrap has no class for (e.g. the card's max width) are inline `style` attributes.
 React hooks used: `useState`, `useEffect`, `useRef`, `useContext`, `useNavigate`, `useLocation`.

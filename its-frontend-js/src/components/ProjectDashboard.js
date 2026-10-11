@@ -6,8 +6,8 @@ import IssueBoard from './IssueBoard';
 import { AuthContext } from '../context/AuthContext';
 import { PRIORITY_OPTIONS, filterIssues } from '../model/Issue';
 import { formatDate } from '../model/Project';
-import projectService from '../service/projectService';
-import userService from '../service/userService';
+import { getProjectIssues, getProjectsByOwner } from '../service/projectService';
+import { getAllUsers } from '../service/userService';
 
 /**
  * Project Owner Dashboard (Milestone 2).
@@ -35,7 +35,7 @@ function ProjectDashboard() {
 
   // 1. Load the owner's projects and all users once
   useEffect(() => {
-    projectService.getProjectsByOwner(user.userId)
+    getProjectsByOwner(user.userId)
       .then((ownedProjects) => {
         setProjects(ownedProjects);
         // The first project from the API is selected by default
@@ -48,7 +48,7 @@ function ProjectDashboard() {
         setError(loadError.message);
       });
 
-    userService.getAllUsers()
+    getAllUsers()
       .then(setUsers)
       .catch(() => setUsers([]));
   }, [user]);
@@ -59,7 +59,7 @@ function ProjectDashboard() {
     setLoadingIssues(true);
     setAssigneeFilter('');
     setPriorityFilter('');
-    projectService.getProjectIssues(selectedProjectId)
+    getProjectIssues(selectedProjectId)
       .then((projectIssues) => {
         setIssues(projectIssues);
         setError('');

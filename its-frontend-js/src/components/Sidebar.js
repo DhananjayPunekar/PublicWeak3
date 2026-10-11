@@ -2,8 +2,8 @@ import { useContext, useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { ROLES, getInitials } from '../model/User';
-import projectService from '../service/projectService';
-import issueService from '../service/issueService';
+import { getProjectsByOwner } from '../service/projectService';
+import { getIssuesByOwner } from '../service/issueService';
 
 /** Navigation links of the Project Owner. */
 const OWNER_LINKS = [
@@ -27,10 +27,10 @@ function Sidebar() {
   // Load the counters once when the sidebar appears
   useEffect(() => {
     if (user.role === ROLES.PROJECT_OWNER) {
-      projectService.getProjectsByOwner(user.userId)
+      getProjectsByOwner(user.userId)
         .then((projects) => setProjectCount(projects.length))
         .catch(() => setProjectCount('-'));
-      issueService.getIssuesByOwner(user.userId)
+      getIssuesByOwner(user.userId)
         .then((issues) => setIssueCount(issues.length))
         .catch(() => setIssueCount('-'));
     }
