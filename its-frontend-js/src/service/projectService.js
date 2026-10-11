@@ -1,8 +1,7 @@
 import axios from 'axios';
-import { getErrorMessage } from './apiService';
 
-// project-service through the API Gateway ("proxy" in package.json adds host and port)
-const PROJECT_API_URL = '/api/projects';
+// project-service, called directly (the service must allow CORS for http://localhost:3000)
+const PROJECT_API_URL = 'http://localhost:8082/api/projects';
 
 /** Projects owned by a user: GET /api/projects/owner/{ownerId}. */
 export async function getProjectsByOwner(ownerId) {
@@ -11,7 +10,8 @@ export async function getProjectsByOwner(ownerId) {
     return response.data;
   } catch (error) {
     console.error('Error fetching the projects', error);
-    throw new Error(getErrorMessage(error));
+    // Show the server's message (e.g. "Invalid email or password") when there is one
+    throw new Error(error.response?.data?.message || error.message);
   }
 }
 
@@ -22,6 +22,7 @@ export async function getProjectIssues(projectId) {
     return response.data;
   } catch (error) {
     console.error('Error fetching the project issues', error);
-    throw new Error(getErrorMessage(error));
+    // Show the server's message (e.g. "Invalid email or password") when there is one
+    throw new Error(error.response?.data?.message || error.message);
   }
 }
