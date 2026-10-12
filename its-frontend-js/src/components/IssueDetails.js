@@ -7,7 +7,7 @@ import { getPriorityBadgeClass, getPriorityLabel, getStatusLabel, getTypeLabel, 
 import { formatDate } from '../model/Project';
 import { getInitials } from '../model/User';
 import { getIssueById } from '../service/issueService';
-import { getProjectById } from '../service/projectService';
+import { getProjectById, getProjectsByOwner } from '../service/projectService';
 import { getUserById } from '../service/userService';
 
 /**
@@ -26,6 +26,8 @@ function IssueDetails() {
   const [issue, setIssue] = useState(null);
   const [project, setProject] = useState(null);
   const [assignee, setAssignee] = useState(null);
+  // IDs of the projects the logged-in owner owns (null while loading)
+  const [ownedProjectIds, setOwnedProjectIds] = useState(null);
   // Error message when the issue cannot be loaded
   const [error, setError] = useState('');
 
@@ -38,10 +40,16 @@ function IssueDetails() {
         getUserById(loadedIssue.assignee).then(setAssignee).catch(() => setAssignee(null));
       })
       .catch((loadError) => setError(loadError.message));
-  }, [issueId]);
 
-  // Only the owner of the issue's project may edit it
-  const canEdit = project !== null && project.productOwner === user.userId;
+    // Same list as the dashboard: the projects owned by the logged-in user
+    getProjectsByOwner(user.userId)
+      .then((projects) => setOwnedProjectIds(projects.map((ownedProject) => String(ownedProject.id))))
+      .catch(() => setOwnedProjectIds([]));
+  }, [issueId, user]);
+
+  // Only the owner of the issue's project may edit it:
+  // the issue's project must be one of the logged-in owner's projects
+  const canEdit = issue !== null && ownedProjectIds !== null && ownedProjectIds.includes(String(issue.project));
   const assigneeName = assignee ? assignee.name : issue ? `User #${issue.assignee}` : '';
 
   /** One "Label: value" line of the details. */
@@ -92,7 +100,7 @@ function IssueDetails() {
           </div>
 
           {successMessage && <div className="alert alert-success py-2" role="alert">{successMessage}</div>}
-          {project && !canEdit && (
+          {issue && ownedProjectIds !== null && !canEdit && (
             <div className="alert alert-warning py-2">This issue belongs to a project you do not own, so it is read-only.</div>
           )}
 
